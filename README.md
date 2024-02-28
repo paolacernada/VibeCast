@@ -2,7 +2,7 @@
 
 ## Welcome to WeatherVibe!
 
-WeatherVibe is a delightful and intuitive weather application designed to not only provide you with up-to-the-minute weather updates but also to match your day's vibe with the current weather conditions. Whether it's a sunny day perfect for a picnic or a cozy rainy evening ideal for reading, WeatherVibe has suggestions for you.
+WeatherVibe is a delightful and intuitive weather application designed to not only provide you with up-to-the-minute weather updates but also to match your day's vibe with the current weather conditions. Whether it's a sunny day perfect for a picnic or a cozy rainy evening ideal for reading, WeatherVibe has  suggestions for you.
 
 Built with modern technologies, including Vue.js for a dynamic and responsive user interface, Node.js and Express.js for robust server-side operations, and MongoDB for efficient data storage, WeatherVibe is crafted to offer an engaging user experience.
 
