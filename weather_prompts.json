@@ -1,0 +1,42 @@
+{
+    "0-15": {
+        "Sunny": "Bundle up and explore the icy outdoors. Great for making frosty art or snow angels in your yard.",
+        "Cloudy": "Ideal weather for indoor coziness. Enjoy a day of board games, warm drinks, and your favorite books.",
+        "Snowy": "Time for snow adventures! Build a snowman or fort, or cozy up for a movie marathon with hot cocoa."
+    },
+    "16-30": {
+        "Sunny": "Embrace the chilly sunshine with a brisk walk, or stay in and craft while basking in the natural light.",
+        "Cloudy": "The overcast skies call for a creative day indoors. Perfect for painting, crafting, or a DIY spa day.",
+        "Snowy": "Snowbound fun awaits outside, or create a winter wonderland indoors with paper snowflakes and decorations."
+    },
+    "31-45": {
+        "Sunny": "The air is crisp, and the sun is gentle. Perfect for a leisurely hike or an outdoor sketching session.",
+        "Cloudy": "A moody day for introspection and creativity. Write, play music, or start an indoor garden.",
+        "Rainy": "Rainy and refreshing. Whip up your favorite soup or enjoy the soothing sounds of rain with a cup of tea."
+    },
+    "46-60": {
+        "Sunny": "With the cool sun shining, it's ideal for cycling, jogging, or a picnic in the nearest park.",
+        "Cloudy": "Soft, diffused light makes today perfect for photography, indoor reading, or visiting a local museum.",
+        "Rainy": "Let the gentle rain inspire you. Write, paint, or take a peaceful walk with a waterproof jacket."
+    },
+    "61-75": {
+        "Sunny": "Perfect weather for outdoor fun. Visit a park, start a garden, or explore a new neighborhood.",
+        "Cloudy": "Mild and comfortable - ideal for a leisurely day exploring local shops or trying out a new caf\u00e9.",
+        "Rainy": "Warm rains bring a fresh perspective. Enjoy indoor crafts, baking, or watch the rain with a cozy blanket."
+    },
+    "76-90": {
+        "Sunny": "Sun-kissed days are here! Splash in a local pool, enjoy a homemade popsicle, or have a beach day.",
+        "Cloudy": "The warmth without the glare - enjoy a backyard hangout, outdoor yoga, or a relaxed bike ride.",
+        "Rainy": "A refreshing change. Have fun with indoor tropical-themed activities or relish the cool breeze post-rain."
+    },
+    "91-105": {
+        "Sunny": "Beat the heat with indoor fun - try a new recipe, start a book club, or have an indoor treasure hunt.",
+        "Cloudy": "Stay cool and creative. Organize an indoor photo shoot, craft session, or a board game marathon.",
+        "Rainy": "Steamy showers offer a break from the heat. Practice indoor gardening, yoga, or enjoy making fruit-infused water."
+    },
+    "106-125": {
+        "Sunny": "Keep cool and comfortable indoors. Try virtual tours of museums, online workout classes, or a movie day.",
+        "Cloudy": "Less intense but still hot. Perfect for indoor picnics, reading, or a DIY home spa day with cool, damp towels.",
+        "Rainy": "A rare, refreshing rain. Capture the moment with indoor photography or relax with soothing rain sounds."
+    }
+}
