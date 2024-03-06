@@ -7,7 +7,7 @@ const User = require('../models/User');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
@@ -15,7 +15,6 @@ app.use(express.json());
 const MONGO_URI = "mongodb+srv://admin:admin@cluster0.yfvd9iw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Routes
 app.post('/signup', async (req, res) => {
   try {
     const { name, email, password, location } = req.body;
@@ -25,6 +24,23 @@ app.post('/signup', async (req, res) => {
   } catch (error) {
     console.error('Error signing up:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
+    if (user) {
+      res.status(200).json({ message: 'User logged in successfully' });
+    }
+    else {
+      User
+      res.status(401).json({ message: 'Invalid Credentials' });
+    }
+  }
+  catch (error) {
+    console.error('Error Logging in:', error);
   }
 });
 

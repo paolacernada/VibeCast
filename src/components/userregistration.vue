@@ -77,8 +77,34 @@ export default {
         alert('Error signing up. Please try again.' + error);
       }
     },
-    async loginin() {
+    async login() {
+      try {
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.loginEmail,
+            password: this.loginPassword,
+          }),
+        });
 
+        if (response.ok) {
+          const responseData = await response.json();
+          alert(responseData.message);
+
+          if (responseData.message === 'User logged in successfully') {
+            this.$emit('login-success');
+            console.log('Emitted the message to the parent')
+          }
+        } else {
+          throw new Error('Failed to Login');
+        }
+      } catch (error) {
+        console.error('Error Logging in:', error);
+        alert('Error Logging in. Please try again.' + error);
+      }
     },
 
 
@@ -113,10 +139,6 @@ form {
   display: flex;
   flex-direction: column;
   margin: 20px
-}
-
-label {
-  margin-botton: 8px;
 }
 
 button[type="submit"] {
