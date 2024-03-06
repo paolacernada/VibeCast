@@ -38,7 +38,7 @@ export default {
 
  header .wrapper {
    display: flex;
-   place-items: felx-start;
+   place-items: flex-start;
    flex-wrap: wrap;
  }
 </style>
