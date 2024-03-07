@@ -7,7 +7,6 @@
     </div>
 
     <div v-if="activeSection === 'signUp'">
-      <h2>Sign Up</h2>
       <form @submit.prevent="signUp">
         <label>Name:</label>
         <input v-model="name" required>
@@ -17,18 +16,17 @@
         <input type="password" v-model="password" required>
         <label>Location:</label>
         <input v-model="location" required>
-        <button type="submit">Sign Up</button>
+        <button type="submit">Register</button>
       </form>
     </div>
 
     <div v-if="activeSection === 'login'">
-      <h2>Login</h2>
       <form @submit.prevent="login">
         <label>Email:</label>
         <input v-model="loginEmail" required>
         <label>Password:</label>
         <input type="password" v-model="loginPassword" required>
-        <button type="submit">Login</button>
+        <button type="submit">Sign In</button>
       </form>
     </div>
   </div>
@@ -128,25 +126,66 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #F0F2F5;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  color: #1C1E21;
 }
 
 button {
-  margin: 10px;
+  padding: 0.75rem 1rem;
+  margin: 0 5px;
+  border: none;
+  border-bottom: 2px solid transparent; 
   cursor: pointer;
+  font-size: 1rem;
+  color: #4267B2; 
+  background-color: transparent;
+  transition: color 0.3s, border-color 0.3s; 
+}
+
+button:hover {
+  color: #365899; 
+  border-bottom: 2px solid #365899; 
+}
+
+.active {
+  border-bottom: 2px solid #4267B2; 
+  color: #4267B2; 
 }
 
 form {
   display: flex;
   flex-direction: column;
-  margin: 20px
+  align-items: center;
+  margin: 20px;
 }
 
 button[type="submit"] {
   margin-top: 10px;
+  background-color: #4267B2; 
+  color: white; 
+  border-radius: 6px;
 }
 
-.active {
-  background-color: blue;
-  color: azure;
+button[type="submit"]:hover {
+  background-color: #365899; 
+  transform: translateY(-2px); 
+}
+
+input {
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 2px solid #4267B2;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 </style>
+
+
