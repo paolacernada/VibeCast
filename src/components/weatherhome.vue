@@ -77,7 +77,7 @@ export default {
 			} else if (cloudPct <= 70) {
 				condition = "Cloudy";
 			} else {
-				condition = "Rainy"; // Assuming rainy for high cloud percentage
+				condition = "Rainy";
 			}
 
 			// Find the correct temperature range
@@ -101,11 +101,11 @@ export default {
   margin: 2rem auto;
   padding: 1.5rem;
   text-align: center;
-  background-color: #F0F2F5; /* Light background, similar to Facebook's secondary background color */
+  background-color: #F0F2F5; 
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  color: #1C1E21; /* Dark grey, used for text on Facebook */
+  color: #1C1E21; 
 }
 
 .weather-form {
