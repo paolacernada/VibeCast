@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,21 +31,26 @@ app.post('/signup', async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email, password });
-    if (user) {
-      res.status(200).json({ message: 'User logged in successfully' });
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid Credentials' });
     }
-    else {
-      User
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (passwordMatch) {
+      res.status(200).json({ message: 'User logged in successfully' });
+    } else {
       res.status(401).json({ message: 'Invalid Credentials' });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error Logging in:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-// Start the server
+// Starting the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
