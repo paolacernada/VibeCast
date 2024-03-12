@@ -91,6 +91,8 @@ export default {
         if (response.ok) {
           const responseData = await response.json();
           alert(responseData.message);
+          localStorage.setItem('isAuthenticated', 'true');
+          this.$router.push('/weather'); // Redirect to WeatherHome after login
 
           if (responseData.message === 'User logged in successfully') {
             this.$emit('login-success');
