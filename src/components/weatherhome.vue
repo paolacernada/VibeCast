@@ -13,6 +13,7 @@
 			<p>Sunset: {{ formatTime(weather.sunset) }}</p>
 		</div>
 		<button v-if="weather" @click="matchVibe" class="match-vibe-btn">Match My Vibe</button>
+		<button @click="logout" class="logout-btn">Logout</button>
 		<div v-if="matchedPrompt" class="matched-prompt">
 			<p>{{ matchedPrompt }}</p>
 		</div>
@@ -90,80 +91,98 @@ export default {
 				this.matchedPrompt = weatherPrompts[tempRange][condition];
 			}
 		},
+		logout() {
+			localStorage.removeItem('isAuthenticated'); // Clear authentication flag
+			this.$router.push('/'); // Redirect to login page
+		},
 	},
 };
 </script>
 
 <style scoped>
-.weather-home, 
+.weather-home,
 .weather-info {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  text-align: center;
-  background-color: #F0F2F5; 
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  color: #1C1E21; 
+	max-width: 600px;
+	margin: 2rem auto;
+	padding: 1.5rem;
+	text-align: center;
+	background-color: #F0F2F5;
+	border-radius: 12px;
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+	font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+	color: #1C1E21;
 }
 
 .weather-form {
-  margin-bottom: 2rem;
+	margin-bottom: 2rem;
 }
 
 .city-input {
-  padding: 0.75rem;
-  margin-right: 0.5rem;
-  margin-bottom: 1rem;
-  border: 2px solid #4267B2;
-  border-radius: 6px;
-  font-size: 1rem;
-  width: calc(100% - 120px);
-  display: inline-block;
-  vertical-align: top;
+	padding: 0.75rem;
+	margin-right: 0.5rem;
+	margin-bottom: 1rem;
+	border: 2px solid #4267B2;
+	border-radius: 6px;
+	font-size: 1rem;
+	width: calc(100% - 120px);
+	display: inline-block;
+	vertical-align: top;
 }
 
 .submit-btn,
 .match-vibe-btn {
+	padding: 0.75rem 1rem;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 1rem;
+	color: white;
+	transition: background-color 0.3s, transform 0.2s;
+	display: inline-block;
+}
+
+.submit-btn,
+.match-vibe-btn {
+	background-color: #4267B2;
+}
+
+.submit-btn:hover,
+.match-vibe-btn:hover {
+	background-color: #365899;
+	transform: translateY(-2px);
+}
+
+.weather-info,
+.matched-prompt {
+	padding: 1.5rem;
+	margin-top: 1rem;
+	border-radius: 10px;
+	color: #1C1E21;
+	background-color: #FFFFFF;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.weather-info p,
+.matched-prompt p {
+	margin: 1rem 0;
+	font-size: 1.1rem;
+	line-height: 1.7;
+}
+
+.logout-btn {
   padding: 0.75rem 1rem;
+  margin-top: 1rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
   color: white;
+  background-color: #d9534f;
   transition: background-color 0.3s, transform 0.2s;
-  display: inline-block;
 }
 
-.submit-btn, 
-.match-vibe-btn {
-  background-color: #4267B2;
-}
-
-.submit-btn:hover,
-.match-vibe-btn:hover {
-  background-color: #365899; 
+.logout-btn:hover {
+  background-color: #c9302c;
   transform: translateY(-2px);
 }
-
-.weather-info,
-.matched-prompt {
-  padding: 1.5rem;
-  margin-top: 1rem;
-  border-radius: 10px;
-  color: #1C1E21; 
-  background-color: #FFFFFF; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-}
-
-.weather-info p,
-.matched-prompt p {
-  margin: 1rem 0;
-  font-size: 1.1rem;
-  line-height: 1.7;
-}
 </style>
-
-
-
