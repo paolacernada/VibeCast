@@ -5,8 +5,11 @@
 			<button type="submit" class="submit-btn">Get Weather</button>
 		</form>
 		<div v-if="weather" class="weather-info">
-			<p>Temperature: {{ weather.temp_c }}°C ({{ convertToFahrenheit(weather.temp_c) }}°F)</p>
-			<p>Feels Like: {{ weather.feelslike_c }}°C ({{ convertToFahrenheit(weather.feelslike_c) }}°F)</p>
+			<p>Temperature: {{ displayTemperature }}°{{ tempUnit }}
+				<button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
+			'Fahrenheit' }}</button>
+			</p>
+			<p>Feels Like: {{ displayFeelsLike }}°{{ tempUnit }}</p>
 			<p>Humidity: {{ weather.humidity }}%</p>
 			<p>Cloud Cover: {{ weather.cloud }}%</p>
 			<p>It's currently {{ isDay ? 'daytime' : 'nighttime' }}.</p>
@@ -19,6 +22,7 @@
 		</div>
 	</div>
 </template>
+
 <script>
 import weatherPrompts from '../../weather_prompts.json';
 export default {
@@ -31,7 +35,16 @@ export default {
 			isDay: null,
 			userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 			apiCondition: '',
+			tempUnit: 'F', // Default temperature unit
 		};
+	},
+	computed: {
+		displayTemperature() {
+			return this.tempUnit === 'C' ? this.weather.temp_c : this.convertToFahrenheit(this.weather.temp_c);
+		},
+		displayFeelsLike() {
+			return this.tempUnit === 'C' ? this.weather.feelslike_c : this.convertToFahrenheit(this.weather.feelslike_c);
+		},
 	},
 	methods: {
 		async fetchWeatherData() {
@@ -85,6 +98,9 @@ export default {
 		logout() {
 			localStorage.removeItem('isAuthenticated'); // Clear authentication flag
 			this.$router.push('/'); // Redirect to login page
+		},
+		toggleTempUnit() {
+			this.tempUnit = this.tempUnit === 'F' ? 'C' : 'F';
 		},
 		isDaytime() {
 			const currentTime = new Date().toLocaleTimeString("en-US", { timeZone: this.userTimezone, hour12: false, hour: '2-digit' });
@@ -179,5 +195,29 @@ export default {
 .logout-btn:hover {
 	background-color: #C9302C;
 	transform: translateY(-2px);
+}
+
+
+.toggle-btn {
+	padding: 0.5rem 1rem;
+	border: 2px solid #4267B2;
+	border-radius: 6px;
+	background-color: #FFFFFF;
+	cursor: pointer;
+	font-size: 1rem;
+	color: #4267B2;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.toggle-btn:hover {
+	background-color: #4267B2;
+	color: #FFFFFF;
+}
+
+.small-btn {
+	padding: 0.3rem 0.6rem;
+	margin-left: 1rem;
+	font-size: 0.9rem;
+	vertical-align: middle;
 }
 </style>
