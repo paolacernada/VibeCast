@@ -279,6 +279,8 @@ export default {
     background-color: #6A5ACD;
 }
 
+
+
 .submit-btn:hover,
 .match-vibe-btn:hover,
 .logout-btn:hover {
