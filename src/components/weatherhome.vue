@@ -27,11 +27,24 @@
                 hour.cloud }}%, Humidity: {{ hour.humidity }}%, {{ hour.condition.text }}</p>
             </div>
         </div>
-        <div v-if="matchedPrompt" class="matched-prompt">
-            <p>{{ matchedPrompt }}</p>
+        <div class="seven-day-forecast" v-if="sevenDayForecast.length > 0">
+            <h2>7-day Forecast</h2>
+            <button @click="toggleSevenDayTempUnit" class="toggle-btn small-btn">
+                Switch to {{ sevenDayTempUnit === 'F' ? 'Celsius' : 'Fahrenheit' }}
+            </button>
+
+            <div class="day" v-for="(day, index) in sevenDayForecast" :key="index">
+                <p>{{ formatDay(day.date) }}: {{ day.day.condition.text }}, Max: {{ formatTemp(day.day.maxtemp_f,
+                day.day.maxtemp_c) }}°{{ sevenDayTempUnit }}, Min: {{ formatTemp(day.day.mintemp_f,
+                day.day.mintemp_c) }}°{{ sevenDayTempUnit }}</p>
+            </div>
         </div>
     </div>
+    <div v-if="matchedPrompt" class="matched-prompt">
+        <p>{{ matchedPrompt }}</p>
+    </div>
 </template>
+
 <script>
 import weatherPrompts from '../../weather_prompts.json';
 
@@ -43,10 +56,12 @@ export default {
             weather: null,
             matchedPrompt: null,
             isDay: null,
-            userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Captures the user's current timezone
             apiCondition: '',
             tempUnit: 'F',
             hourlyForecast: [],
+            sevenDayForecast: [], // Store the 7-day forecast data
+            sevenDayTempUnit: 'F', // Track the temperature unit for the 7-day forecast
         };
     },
     computed: {
@@ -55,6 +70,14 @@ export default {
         },
         displayFeelsLike() {
             return this.tempUnit === 'C' ? this.weather.feelslike_c : this.convertToFahrenheit(this.weather.feelslike_c);
+        },
+        userTimezoneOffset() {
+            const offset = new Date().getTimezoneOffset();
+            const absOffset = Math.abs(offset);
+            const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+            const minutes = String(absOffset % 60).padStart(2, '0');
+            const sign = offset > 0 ? '-' : '+';
+            return `${sign}${hours}:${minutes}`;
         },
         next5HoursForecast() {
             const currentHour = new Date().getHours();
@@ -73,12 +96,13 @@ export default {
             try {
                 await this.fetchCurrentWeather(apiKey);
                 await this.fetchForecast(apiKey);
+                await this.fetchSevenDayForecast(apiKey);
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             }
         },
         async fetchCurrentWeather(apiKey) {
-            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.city}`;
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.city}&tz=${this.userTimezone}`;
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch current weather data');
             const data = await response.json();
@@ -86,8 +110,17 @@ export default {
             this.isDay = data.current.is_day;
             this.apiCondition = data.current.condition.text;
         },
+        async fetchSevenDayForecast(apiKey) {
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.city}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch 7-day forecast data');
+            const data = await response.json();
+
+            // Skip the first day's data (today) and keep the next 7 days
+            this.sevenDayForecast = data.forecast.forecastday.slice(1); // Start from index 1 to exclude today
+        },
         async fetchForecast(apiKey) {
-            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.city}&days=1&aqi=no&alerts=no`;
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.city}&days=1&aqi=no&alerts=no&tz=${this.userTimezone}`;
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch forecast data');
             const data = await response.json();
@@ -97,7 +130,6 @@ export default {
             return Math.round(celsius * 9 / 5 + 32);
         },
         matchVibe() {
-            console.log("Matching vibe...");
             if (!this.weather) return;
 
             const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
@@ -128,6 +160,9 @@ export default {
         toggleTempUnit() {
             this.tempUnit = this.tempUnit === 'F' ? 'C' : 'F';
         },
+        toggleSevenDayTempUnit() {
+            this.sevenDayTempUnit = this.sevenDayTempUnit === 'F' ? 'C' : 'F';
+        },
         formatHour(hourString) {
             const date = new Date(hourString);
             let hours = date.getHours();
@@ -137,7 +172,17 @@ export default {
             const minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
             return `${hours}:${minutes} ${ampm}`;
         },
+        formatTemp(tempF, tempC) {
+            return this.sevenDayTempUnit === 'F' ? tempF : tempC;
+        },
+        formatDay(dateString) {
+            // Create a Date object using the dateString and the user's time zone
+            const date = new Date(dateString + 'T00:00:00' + this.userTimezoneOffset);
 
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${month}/${day}`;
+        },
         resetData() {
             this.weather = null;
             this.matchedPrompt = null;
