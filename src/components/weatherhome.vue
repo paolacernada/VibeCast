@@ -18,7 +18,6 @@
             <p>Feels Like: {{ displayFeelsLike }}°{{ tempUnit }}</p>
             <p>Humidity: {{ weather.humidity }}%</p>
             <p>Cloud Cover: {{ weather.cloud }}%</p>
-            <p>It's currently {{ isDay ? 'daytime' : 'nighttime' }}.</p>
             <p>Condition: {{ apiCondition }}</p>
         </div>
         <div v-if="hourlyForecast.length > 0" class="hourly-forecast">
@@ -209,13 +208,12 @@ export default {
 
 <style scoped>
 .seven-day-forecast {
-    flex-basis: 100%;
-    /* Take full width to allow column style layout */
     margin-top: 2%;
-    padding: 1rem;
+    padding: 0.8rem;
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    width: 96.5%;
 }
 
 .seven-day-forecast .forecast-container {
@@ -225,7 +223,7 @@ export default {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 800px;
     margin: auto;
     padding: 1rem;
     display: flex;
@@ -263,6 +261,7 @@ export default {
 }
 
 .city-input {
+    flex-grow: 1;
     border: 2px solid #4267B2;
 }
 
@@ -279,8 +278,6 @@ export default {
     background-color: #6A5ACD;
 }
 
-
-
 .submit-btn:hover,
 .match-vibe-btn:hover,
 .logout-btn:hover {
@@ -291,19 +288,18 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
     width: 100%;
 }
 
 .weather-info {
-    flex-basis: 300px;
-    padding: 0.75rem;
+    flex-basis: auto;
+    padding: 0.8rem;
     margin-top: 2%;
     margin-right: 2%;
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    height: 312px;
+    height: 265px;
 }
 
 .weather-info h2,
@@ -312,19 +308,24 @@ export default {
 .seven-day-forecast .day p,
 .hourly-forecast h2,
 .hourly-forecast p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin: 0.2rem 0;
     line-height: 1.3;
 }
 
+.seven-day-forecast .day {
+    margin-right: 0.5rem;
+}
+
 .hourly-forecast {
-    flex-grow: 2;
+    /* flex-grow: 2; */
     margin-top: 2%;
-    padding: 0.75rem;
+    padding: 0.8rem;
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    height: 312px;
+    height: 265px;
+    width: 72%;
 }
 
 .matched-prompt {
@@ -341,7 +342,7 @@ export default {
 .hourly-forecast h2,
 .hourly-forecast p {
     margin: 0.5rem 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.7;
 }
 
