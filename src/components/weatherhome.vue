@@ -10,6 +10,7 @@
 			<p>Humidity: {{ weather.humidity }}%</p>
 			<p>Cloud Cover: {{ weather.cloud }}%</p>
 			<p>It's currently {{ isDay ? 'daytime' : 'nighttime' }}.</p>
+			<p>Condition: {{ apiCondition }}</p>
 		</div>
 		<button v-if="weather" @click="matchVibe" class="match-vibe-btn">Match My Vibe</button>
 		<button @click="logout" class="logout-btn">Logout</button>
@@ -28,6 +29,8 @@ export default {
 			weather: null, // To store the weather data
 			matchedPrompt: null, // To store the matched prompt
 			isDay: null,
+			userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+			apiCondition: '',
 		};
 	},
 	methods: {
@@ -44,7 +47,9 @@ export default {
 				}
 				const data = await response.json();
 				this.weather = data.current; // Store the weather data
+				this.currentCondition = data.current.condition.text;
 				this.isDay = data.current.is_day;
+				this.apiCondition = data.current.condition.text;
 			} catch (error) {
 				console.error('Error fetching weather data:', error);
 				this.weather = null; // Reset weather data on error
@@ -56,35 +61,35 @@ export default {
 		matchVibe() {
 			if (!this.weather) return;
 
-			const temperature = this.weather.temp_c;
-			const cloudPct = this.weather.cloud;
-			let condition;
+			const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
+			let condition = this.apiCondition;
+			const isDayTime = this.isDay === 1;
 
-			if (cloudPct <= 30) { // 
-				condition = "Sunny";
-			} else if (cloudPct > 30 && cloudPct <= 70) {
-				condition = "Cloudy";
-			} else {
-				condition = "Rainy";
+			// Iterating through each temperature range to find a match
+			for (let tempRange in weatherPrompts) {
+				const [min, max] = tempRange.split('-').map(Number);
+				if (temperatureFahrenheit >= min && temperatureFahrenheit <= max) {
+					// Accessing the daytime or nighttime prompts within the matched temperature range
+					const prompts = isDayTime ? weatherPrompts[tempRange].daytime : weatherPrompts[tempRange].nighttime;
+
+					// If the API condition matches one of the conditions in the prompts, use it
+					if (prompts[condition]) {
+						this.matchedPrompt = prompts[condition];
+						return;
+					}
+				}
 			}
-
-			// Find the correct temperature range for the matched prompt
-			const tempRange = Object.keys(weatherPrompts).find(range => {
-				const [min, max] = range.split('-').map(Number);
-				return temperature >= min && temperature <= max;
-			});
-
-			// Set the matched prompt based on the temperature range and condition
-			if (tempRange && condition) {
-				this.matchedPrompt = weatherPrompts[tempRange][condition];
-			} else {
-				// Set a default prompt or message if no matching range and condition are found
-				this.matchedPrompt = "Enjoy the weather, no matter the vibe!";
-			}
+			// Fallback to custom logic or default prompt if no match found
+			this.matchedPrompt = "Enjoy the weather, no matter the vibe!";
 		},
 		logout() {
 			localStorage.removeItem('isAuthenticated'); // Clear authentication flag
 			this.$router.push('/'); // Redirect to login page
+		},
+		isDaytime() {
+			const currentTime = new Date().toLocaleTimeString("en-US", { timeZone: this.userTimezone, hour12: false, hour: '2-digit' });
+			const currentHour = parseInt(currentTime, 10); // Convert to integer for comparison
+			return currentHour >= 6 && currentHour < 18; // Considering day time from 6 AM to 6 PM
 		},
 	},
 };
