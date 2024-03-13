@@ -9,6 +9,7 @@
             <button @click="logout" class="logout-btn">Logout</button>
         </div>
         <div v-if="weather" class="weather-info">
+            <h2>Now</h2>
             <button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
                 'Fahrenheit' }}</button>
 
@@ -21,22 +22,25 @@
             <p>Condition: {{ apiCondition }}</p>
         </div>
         <div v-if="hourlyForecast.length > 0" class="hourly-forecast">
-            <h2>Next 5 Hours Forecast</h2>
+            <h2>5 Hour Forecast</h2>
             <div class="hour" v-for="(hour, index) in next5HoursForecast" :key="index">
                 <p>{{ formatHour(hour.time) }}: {{ hour.temp_f }}°F, Feels like: {{ hour.feelslike_f }}°F, Cloud: {{
                 hour.cloud }}%, Humidity: {{ hour.humidity }}%, {{ hour.condition.text }}</p>
             </div>
         </div>
+        <!-- 7-day Forecast -->
         <div class="seven-day-forecast" v-if="sevenDayForecast.length > 0">
             <h2>7-day Forecast</h2>
             <button @click="toggleSevenDayTempUnit" class="toggle-btn small-btn">
                 Switch to {{ sevenDayTempUnit === 'F' ? 'Celsius' : 'Fahrenheit' }}
             </button>
-
-            <div class="day" v-for="(day, index) in sevenDayForecast" :key="index">
-                <p>{{ formatDay(day.date) }}: {{ day.day.condition.text }}, Max: {{ formatTemp(day.day.maxtemp_f,
-                day.day.maxtemp_c) }}°{{ sevenDayTempUnit }}, Min: {{ formatTemp(day.day.mintemp_f,
-                day.day.mintemp_c) }}°{{ sevenDayTempUnit }}</p>
+            <div class="forecast-container">
+                <div class="day" v-for="(day, index) in sevenDayForecast" :key="index">
+                    <p>{{ formatDay(day.date) }}</p>
+                    <p>{{ day.day.condition.text }}</p>
+                    <p>Max: {{ formatTemp(day.day.maxtemp_f, day.day.maxtemp_c) }}°{{ sevenDayTempUnit }}</p>
+                    <p>Min: {{ formatTemp(day.day.mintemp_f, day.day.mintemp_c) }}°{{ sevenDayTempUnit }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -194,10 +198,26 @@ export default {
 </script>
 
 <style scoped>
+.seven-day-forecast {
+    flex-basis: 100%;
+    /* Take full width to allow column style layout */
+    margin-top: 2%;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.seven-day-forecast .forecast-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
 .container {
     max-width: 1000px;
     margin: auto;
-    padding: 1.5rem;
+    padding: 1rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -265,23 +285,34 @@ export default {
 
 .weather-info {
     flex-basis: 300px;
-    padding: 1rem;
+    padding: 0.75rem;
     margin-top: 2%;
     margin-right: 2%;
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    min-height: 265px;
+    height: 312px;
+}
+
+.weather-info h2,
+.weather-info p,
+.seven-day-forecast h2,
+.seven-day-forecast .day p,
+.hourly-forecast h2,
+.hourly-forecast p {
+    font-size: 1.1rem;
+    margin: 0.2rem 0;
+    line-height: 1.3;
 }
 
 .hourly-forecast {
     flex-grow: 2;
     margin-top: 2%;
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    min-height: 265px;
+    height: 312px;
 }
 
 .matched-prompt {
