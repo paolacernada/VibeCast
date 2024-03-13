@@ -55,23 +55,31 @@ export default {
 		},
 		matchVibe() {
 			if (!this.weather) return;
+
 			const temperature = this.weather.temp_c;
 			const cloudPct = this.weather.cloud;
 			let condition;
-			if (cloudPct <= 30) {
+
+			if (cloudPct <= 30) { // 
 				condition = "Sunny";
-			} else if (cloudPct <= 70) {
+			} else if (cloudPct > 30 && cloudPct <= 70) {
 				condition = "Cloudy";
 			} else {
 				condition = "Rainy";
 			}
-			
+
+			// Find the correct temperature range for the matched prompt
 			const tempRange = Object.keys(weatherPrompts).find(range => {
 				const [min, max] = range.split('-').map(Number);
 				return temperature >= min && temperature <= max;
 			});
+
+			// Set the matched prompt based on the temperature range and condition
 			if (tempRange && condition) {
 				this.matchedPrompt = weatherPrompts[tempRange][condition];
+			} else {
+				// Set a default prompt or message if no matching range and condition are found
+				this.matchedPrompt = "Enjoy the weather, no matter the vibe!";
 			}
 		},
 		logout() {
