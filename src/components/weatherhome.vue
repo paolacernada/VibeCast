@@ -65,8 +65,7 @@ export default {
 			} else {
 				condition = "Rainy";
 			}
-
-			// Find the correct temperature range
+			
 			const tempRange = Object.keys(weatherPrompts).find(range => {
 				const [min, max] = range.split('-').map(Number);
 				return temperature >= min && temperature <= max;
