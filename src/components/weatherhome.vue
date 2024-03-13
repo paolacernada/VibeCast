@@ -44,7 +44,7 @@ export default {
 				}
 				const data = await response.json();
 				this.weather = data.current; // Store the weather data
-				this.isDay = data.current.isDay;
+				this.isDay = data.current.is_day;
 			} catch (error) {
 				console.error('Error fetching weather data:', error);
 				this.weather = null; // Reset weather data on error
