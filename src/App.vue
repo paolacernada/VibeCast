@@ -1,22 +1,17 @@
 <template>
   <mainheader />
-  <userregistration v-if="!showWeatherHome" @login-success="handleLoginSuccess" />
-  <weatherhome v-if="showWeatherHome" />
+  <router-view></router-view>
 </template>
 
 
 <script>
-import mainheader from './components/mainheader.vue';
-import userregistration from './components/userregistration.vue';
-import weatherhome from './components/weatherhome.vue';
+import MainHeader from './components/mainheader.vue';
 
 
 export default {
   name: 'App',
   components: {
-    mainheader,
-    userregistration,
-    weatherhome,
+    MainHeader,
   },
   data() {
     return {
