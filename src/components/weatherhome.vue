@@ -213,13 +213,15 @@ export default {
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    width: 96.5%;
+    width: auto;
+    height: auto;
 }
 
 .seven-day-forecast .forecast-container {
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
+ 
 }
 
 .container {
@@ -299,18 +301,7 @@ export default {
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    height: 265px;
-}
-
-.weather-info h2,
-.weather-info p,
-.seven-day-forecast h2,
-.seven-day-forecast .day p,
-.hourly-forecast h2,
-.hourly-forecast p {
-    font-size: 1rem;
-    margin: 0.2rem 0;
-    line-height: 1.3;
+    height: 250px;
 }
 
 .seven-day-forecast .day {
@@ -324,8 +315,8 @@ export default {
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    height: 265px;
-    width: 72%;
+    height: 250px;
+    width: auto;
 }
 
 .matched-prompt {
@@ -338,12 +329,20 @@ export default {
 }
 
 .weather-info p,
+.weather-info h2,
 .matched-prompt p,
+.seven-day-forecast .day p,
+.seven-day-forecast h2,
 .hourly-forecast h2,
 .hourly-forecast p {
     margin: 0.5rem 0;
-    font-size: 1rem;
+    font-size: 0.9rem;
     line-height: 1.7;
+}
+
+.seven-day-forecast .day p {
+    line-height: 1.5;
+    margin-top: 0.6rem;
 }
 
 .toggle-btn,
@@ -362,4 +361,5 @@ export default {
     background-color: #4267B2;
     color: #FFFFFF;
 }
+
 </style>
