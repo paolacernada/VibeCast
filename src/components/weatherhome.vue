@@ -23,9 +23,12 @@
         </div>
         <div v-if="hourlyForecast.length > 0" class="hourly-forecast">
             <h2>5 Hour Forecast</h2>
+            <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
+                'Celsius' : 'Fahrenheit' }}</button>
             <div class="hour" v-for="(hour, index) in next5HoursForecast" :key="index">
-                <p>{{ formatHour(hour.time) }}: {{ hour.temp_f }}°F, Feels like: {{ hour.feelslike_f }}°F, Cloud: {{
-                hour.cloud }}%, Humidity: {{ hour.humidity }}%, {{ hour.condition.text }}</p>
+                <p>{{ formatHour(hour.time) }}: {{ formatHourlyTemp(hour.temp_f, hour.temp_c) }}°{{ hourlyTempUnit }},
+                    Feels like: {{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{ hourlyTempUnit }}, Cloud:
+                    {{ hour.cloud }}%, Humidity: {{ hour.humidity }}%, {{ hour.condition.text }}</p>
             </div>
         </div>
         <!-- 7-day Forecast -->
@@ -43,9 +46,9 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div v-if="matchedPrompt" class="matched-prompt">
+        <div v-if="matchedPrompt" class="matched-prompt">
         <p>{{ matchedPrompt }}</p>
+    </div>
     </div>
 </template>
 
@@ -64,8 +67,9 @@ export default {
             apiCondition: '',
             tempUnit: 'F',
             hourlyForecast: [],
-            sevenDayForecast: [], // Store the 7-day forecast data
-            sevenDayTempUnit: 'F', // Track the temperature unit for the 7-day forecast
+            sevenDayForecast: [],
+            sevenDayTempUnit: 'F',
+            hourlyTempUnit: 'F',
         };
     },
     computed: {
@@ -167,6 +171,9 @@ export default {
         toggleSevenDayTempUnit() {
             this.sevenDayTempUnit = this.sevenDayTempUnit === 'F' ? 'C' : 'F';
         },
+        toggleHourlyTempUnit() {
+            this.hourlyTempUnit = this.hourlyTempUnit === 'F' ? 'C' : 'F';
+        },
         formatHour(hourString) {
             const date = new Date(hourString);
             let hours = date.getHours();
@@ -178,6 +185,9 @@ export default {
         },
         formatTemp(tempF, tempC) {
             return this.sevenDayTempUnit === 'F' ? tempF : tempC;
+        },
+        formatHourlyTemp(tempF, tempC) {
+            return this.hourlyTempUnit === 'F' ? tempF : tempC;
         },
         formatDay(dateString) {
             // Create a Date object using the dateString and the user's time zone
