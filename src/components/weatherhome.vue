@@ -2,7 +2,7 @@
     <div class="container">
         <div class="header">
             <form @submit.prevent="fetchWeatherData" class="weather-form">
-                <input type="text" v-model="zipCode" placeholder="Enter ZIP code" class="city-input">
+                <input type="text" v-model="zipCode" placeholder="Enter ZIP code" class="city-input" @focus="clearZipCode">
                 <button type="submit" class="submit-btn">Get Weather</button>
             </form>
             <button type="button" @click="matchVibe" class="forecast-btn"
@@ -151,8 +151,6 @@ export default {
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             }
-            // Clear the ZIP code from the input after fetching the weather data
-            this.zipCode = '';
         },
         async fetchCurrentWeather(apiKey) {
             const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.zipCode}&tz=${this.userTimezone}`;
@@ -363,6 +361,9 @@ export default {
         },
         beforeDestroy() {
             document.body.style.backgroundImage = 'none';
+        },
+        clearZipCode() {
+            this.zipCode = '';
         },
         promptForCurrentLocation() {
             if (navigator.geolocation) {
