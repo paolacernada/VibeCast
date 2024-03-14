@@ -1,181 +1,565 @@
 <template>
-    <div :class="{ 'weather-home': true, 'dark-theme': !isDay, 'light-theme': isDay }">
-      <form @submit.prevent="fetchWeatherData" class="weather-form">
-        <input type="text" v-model="city" placeholder="Enter city name" class="city-input">
-        <button type="submit" class="submit-btn">Get Weather</button>
-      </form>
-      <div v-if="weather" class="weather-info">
-        <p>Temperature: {{ weather.temp_c }}°C ({{ convertToFahrenheit(weather.temp_c) }}°F)</p>
-        <p>Feels Like: {{ weather.feelslike_c }}°C ({{ convertToFahrenheit(weather.feelslike_c) }}°F)</p>
-        <p>Humidity: {{ weather.humidity }}%</p>
-        <p>Cloud Cover: {{ weather.cloud }}%</p>
-        <p>It's currently {{ isDay ? 'daytime' : 'nighttime' }}.</p>
-      </div>
-      <button v-if="weather" @click="matchVibe" class="match-vibe-btn">Match My Vibe</button>
-      <button @click="logout" class="logout-btn">Logout</button>
-      <div v-if="matchedPrompt" class="matched-prompt">
-        <p>{{ matchedPrompt }}</p>
-      </div>
+    <div class="container">
+        <div class="header">
+            <form @submit.prevent="fetchWeatherData" class="weather-form">
+                <input type="text" v-model="zipCode" placeholder="Enter ZIP code" class="city-input">
+                <button type="submit" class="submit-btn">Get Weather</button>
+            </form>
+            <button type="button" @click="matchVibe" class="forecast-btn"
+                v-if="weather && !showHourlyForecast && !showSevenDayForecast">Match My Vibe</button>
+            <button @click="logout" class="logout-btn">Logout</button>
+        </div>
+        <!-- Matched Prompt Section -->
+        <div v-if="matchedPrompt && matchedVibeClicked" class="matched-prompt">
+            <p>{{ matchedPrompt }}</p>
+        </div>
+        <!-- Weather Info Section -->
+        <div v-if="weather && !showHourlyForecast && !showSevenDayForecast" class="weather-info">
+            <div class="location-info">
+                <h3>{{ cityName }}, {{ regionName }}</h3>
+            </div>
+            <h2>Now</h2>
+            <button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
+                'Fahrenheit' }}</button>
+            <p><span class="descriptive">Temperature:</span> {{ displayTemperature }}°{{ tempUnit }}</p>
+            <p><span class="descriptive">Feels Like:</span> {{ displayFeelsLike }}°{{ tempUnit }}</p>
+            <p><span class="descriptive">Humidity:</span> {{ weather.humidity }}%</p>
+            <p><span class="descriptive">Cloud Cover:</span> {{ weather.cloud }}%</p>
+            <p><span class="descriptive">Condition:</span> {{ apiCondition }}</p>
+            <button type="button" @click="showHourlyForecastView" class="forecast-btn">Hourly Forecast</button>
+            <button type="button" @click="showSevenDayForecastView" class="forecast-btn">7-day Forecast</button>
+        </div>
+        <!-- Hourly Forecast Section -->
+        <div v-if="showHourlyForecast" class="hourly-forecast">
+            <div class="location-info">
+                <h3>{{ cityName }}, {{ regionName }}</h3>
+            </div>
+            <h2>Hourly Forecast</h2>
+            <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
+                'Celsius' : 'Fahrenheit' }}</button>
+            <div class="hour" v-for="(hour, index) in next5HoursForecast" :key="index">
+                <p><span class="descriptive">{{ formatHour(hour.time) }}:</span> {{ formatHourlyTemp(hour.temp_f,
+                hour.temp_c) }}°{{ hourlyTempUnit }},
+                    <strong>Feels like: </strong>{{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{
+                hourlyTempUnit }}, <strong>Cloud:</strong>
+                    {{ hour.cloud }}%, <strong>Humidity: </strong>{{ hour.humidity }}%, {{ hour.condition.text }}
+                </p>
+            </div>
+            <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
+        </div>
+        <!-- 7-day Forecast Section -->
+        <div v-if="showSevenDayForecast" class="seven-day-forecast">
+            <div class="location-info">
+                <h3>{{ cityName }}, {{ regionName }}</h3>
+            </div>
+            <h2>7-day Forecast</h2>
+            <button @click="toggleSevenDayTempUnit" class="toggle-btn small-btn">
+                Switch to {{ sevenDayTempUnit === 'F' ? 'Celsius' : 'Fahrenheit' }}
+            </button>
+            <div class="forecast-container">
+                <div class="day" v-for="(day, index) in sevenDayForecast" :key="index">
+                    <p><span class="descriptive">{{ formatDay(day.date) }}</span></p>
+                    <p>{{ day.day.condition.text }}</p>
+                    <p><strong>Max: </strong>{{ formatTemp(day.day.maxtemp_f, day.day.maxtemp_c) }}°{{ sevenDayTempUnit
+                        }}</p>
+                    <p><strong>Min: </strong>{{ formatTemp(day.day.mintemp_f, day.day.mintemp_c) }}°{{ sevenDayTempUnit
+                        }}</p>
+                </div>
+            </div>
+            <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
+        </div>
     </div>
-  </template>
-  
-  <script>
-  import weatherPrompts from '../../weather_prompts.json';
-  export default {
+</template>
+
+<script>
+import weatherPrompts from '../../weather_prompts.json';
+
+export default {
     name: 'weatherhome',
     data() {
-      return {
-        city: '', // To store the user input
-        weather: null, // To store the weather data
-        matchedPrompt: null, // To store the matched prompt
-        isDay: null,
-      };
+        return {
+            zipCode: '',
+            weather: null,
+            matchedPrompt: null,
+            isDay: null,
+            userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Captures the user's current timezone
+            apiCondition: '',
+            tempUnit: 'F',
+            hourlyForecast: [],
+            sevenDayForecast: [],
+            sevenDayTempUnit: 'F',
+            hourlyTempUnit: 'F',
+            showHourlyForecast: false,
+            showSevenDayForecast: false,
+            matchedVibeClicked: false,
+            cityName: '',
+            regionName: '',
+        };
+    },
+    computed: {
+        displayTemperature() {
+            return this.tempUnit === 'C' ? this.weather.temp_c : this.convertToFahrenheit(this.weather.temp_c);
+        },
+        displayFeelsLike() {
+            return this.tempUnit === 'C' ? this.weather.feelslike_c : this.convertToFahrenheit(this.weather.feelslike_c);
+        },
+        userTimezoneOffset() {
+            const offset = new Date().getTimezoneOffset();
+            const absOffset = Math.abs(offset);
+            const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+            const minutes = String(absOffset % 60).padStart(2, '0');
+            const sign = offset > 0 ? '-' : '+';
+            return `${sign}${hours}:${minutes}`;
+        },
+        next5HoursForecast() {
+            const currentHour = new Date().getHours();
+            return this.hourlyForecast.filter(hour => {
+                const hourDate = new Date(hour.time);
+                const hourOfForecast = hourDate.getHours();
+                return hourOfForecast > currentHour && hourOfForecast <= currentHour + 5;
+            });
+        }
     },
     methods: {
-      async fetchWeatherData() {
-        this.matchedPrompt = null; // Reset the matched prompt at the start of a new search
-        const apiKey = import.meta.env.VITE_API_KEY;
-        const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.city}`;
-        try {
-          const response = await fetch(url, {
-            method: 'GET',
-          });
-          if (!response.ok) {
-            throw new Error('Failed to fetch weather data');
-          }
-          const data = await response.json();
-          this.weather = data.current; // Store the weather data
-          this.isDay = data.current.is_day;
-        } catch (error) {
-          console.error('Error fetching weather data:', error);
-          this.weather = null; // Reset weather data on error
-        }
-        
-      },
-      convertToFahrenheit(celsius) {
-        return Math.round(celsius * 9 / 5 + 32);
-      },
-      matchVibe() {
-        if (!this.weather) return;
-        const temperature = this.weather.temp_c;
-        const cloudPct = this.weather.cloud;
-        let condition;
-        if (cloudPct <= 30) {
-          condition = "Sunny";
-        } else if (cloudPct <= 70) {
-          condition = "Cloudy";
-        } else {
-          condition = "Rainy";
-        }
-  
-        // Find the correct temperature range
-        const tempRange = Object.keys(weatherPrompts).find(range => {
-          const [min, max] = range.split('-').map(Number);
-          return temperature >= min && temperature <= max;
-        });
-        if (tempRange && condition) {
-          this.matchedPrompt = weatherPrompts[tempRange][condition];
-        }
-      },
-      logout() {
-        localStorage.removeItem('isAuthenticated'); // Clear authentication flag
-        this.$router.push('/'); // Redirect to login page
-      },
+        async fetchWeatherData() {
+            this.resetData();
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
+
+            const apiKey = import.meta.env.VITE_API_KEY;
+            try {
+                await this.fetchCurrentWeather(apiKey);
+                await this.fetchForecast(apiKey);
+                await this.fetchSevenDayForecast(apiKey);
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+            }
+        },
+        async fetchCurrentWeather(apiKey) {
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.zipCode}&tz=${this.userTimezone}`;
+            const response = await fetch(url, { method: 'GET' });
+            if (!response.ok) throw new Error('Failed to fetch current weather data');
+            const data = await response.json();
+            this.weather = data.current;
+            this.isDay = data.current.is_day;
+            this.apiCondition = data.current.condition.text;
+            this.cityName = data.location.name;
+            this.regionName = data.location.region;
+        },
+        async fetchSevenDayForecast(apiKey) {
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch 7-day forecast data');
+            const data = await response.json();
+
+            // Skip the first day's data (today) and keep the next 7 days
+            this.sevenDayForecast = data.forecast.forecastday.slice(1); // Start from index 1 to exclude today
+        },
+        async fetchForecast(apiKey) {
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=1&aqi=no&alerts=no&tz=${this.userTimezone}`;
+            const response = await fetch(url, { method: 'GET' });
+            if (!response.ok) throw new Error('Failed to fetch forecast data');
+            const data = await response.json();
+            this.hourlyForecast = data.forecast.forecastday[0].hour;
+        },
+        convertToFahrenheit(celsius) {
+            return Math.round(celsius * 9 / 5 + 32);
+        },
+        matchVibe() {
+            if (!this.weather) return;
+
+            const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
+            let condition = this.apiCondition;
+            const isDayTime = this.isDay === 1;
+            this.matchedVibeClicked = true;
+
+            // Iterating through each temperature range to find a match
+            for (let tempRange in weatherPrompts) {
+                const [min, max] = tempRange.split('-').map(Number);
+                if (temperatureFahrenheit >= min && temperatureFahrenheit <= max) {
+                    // Accessing the daytime or nighttime prompts within the matched temperature range
+                    const prompts = isDayTime ? weatherPrompts[tempRange].daytime : weatherPrompts[tempRange].nighttime;
+
+                    // If the API condition matches one of the conditions in the prompts, use it
+                    if (prompts[condition]) {
+                        this.matchedPrompt = prompts[condition];
+                        return;
+                    }
+                }
+            }
+            // Fallback to custom logic or default prompt if no match found
+            this.matchedPrompt = "Enjoy the weather, no matter the vibe!";
+        },
+
+        logout() {
+            localStorage.removeItem('isAuthenticated');
+            this.$router.push('/');
+        },
+        toggleTempUnit() {
+            this.tempUnit = this.tempUnit === 'F' ? 'C' : 'F';
+        },
+        toggleSevenDayTempUnit() {
+            this.sevenDayTempUnit = this.sevenDayTempUnit === 'F' ? 'C' : 'F';
+        },
+        toggleHourlyTempUnit() {
+            this.hourlyTempUnit = this.hourlyTempUnit === 'F' ? 'C' : 'F';
+        },
+        formatHour(hourString) {
+            const date = new Date(hourString);
+            let hours = date.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            const minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+            return `${hours}:${minutes} ${ampm}`;
+        },
+        formatTemp(tempF, tempC) {
+            return this.sevenDayTempUnit === 'F' ? tempF : tempC;
+        },
+        formatHourlyTemp(tempF, tempC) {
+            return this.hourlyTempUnit === 'F' ? tempF : tempC;
+        },
+        formatDay(dateString) {
+            // Create a Date object using the dateString and the user's time zone
+            const date = new Date(dateString + 'T00:00:00' + this.userTimezoneOffset);
+
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${month}/${day}`;
+        },
+        resetData() {
+            this.weather = null;
+            this.matchedPrompt = null;
+            this.apiCondition = '';
+            this.hourlyForecast = [];
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
+        },
+        resetView() {
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
+        },
+        showHourlyForecastView() {
+            this.showHourlyForecast = true;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
+        },
+
+        showSevenDayForecastView() {
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = true;
+            this.matchedVibeClicked = false;
+        },
     },
-  };
-  </script>
-  
-  <style scoped>
-  .weather-home,
-  .weather-info {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    text-align: center;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    color: #1C1E21;
-  }
-  
-  .dark-theme {
-    background-color: #1C1E21;
-  }
-  
-  .light-theme {
-    background-color: #F0F2F5;
-  }
-  
-  .weather-form {
-    margin-bottom: 2rem;
-  }
-  
-  .city-input {
-    padding: 0.75rem;
-    margin-right: 0.5rem;
-    margin-bottom: 1rem;
-    border: 2px solid #4267B2;
-    border-radius: 6px;
-    font-size: 1rem;
-    width: calc(100% - 120px);
-    display: inline-block;
-    vertical-align: top;
-  }
-  
-  .submit-btn,
-  .match-vibe-btn {
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    color: white;
-    transition: background-color 0.3s, transform 0.2s;
-    display: inline-block;
-  }
-  
-  .submit-btn,
-  .match-vibe-btn {
-    background-color: #4267B2;
-  }
-  
-  .submit-btn:hover,
-  .match-vibe-btn:hover {
-    background-color: #365899;
-    transform: translateY(-2px);
-  }
-  
-  .weather-info,
-  .matched-prompt {
-    padding: 1.5rem;
-    margin-top: 1rem;
+};
+</script>
+
+<style scoped>
+.seven-day-forecast {
+    margin-top: 2%;
+    padding: 0.8rem;
     border-radius: 10px;
-    color: #1C1E21;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-  }
-  
-  .weather-info p,
-  .matched-prompt p {
-    margin: 1rem 0;
-    font-size: 1.1rem;
-    line-height: 1.7;
-  }
-  
-  .logout-btn {
+    width: fit-content;
+    height: auto;
+}
+
+.seven-day-forecast .forecast-container {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+
+}
+
+.container {
+    max-width: 800px;
+    width: auto;
+    margin: 1em;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    background-color: #F0F2F5;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    color: #1C1E21;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.weather-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.city-input,
+.submit-btn,
+.match-vibe-btn,
+.logout-btn {
     padding: 0.75rem 1rem;
-    margin-top: 1rem;
-    border: none;
     border-radius: 6px;
-    cursor: pointer;
     font-size: 1rem;
+    margin-right: 1.5rem;
+}
+
+.city-input {
+    flex-grow: 1;
+    border: 2px solid #4267B2;
+}
+
+.submit-btn,
+.match-vibe-btn,
+.logout-btn {
+    border: none;
     color: white;
-    background-color: #D9534F;
-    transition: background-color 0.3s, transform 0.2s;
-  }
-  
-  .logout-btn:hover {
-    background-color: #C9302C;
-    transform: translateY(-2px);
-  }
-  </style>
+    background-color: #4267B2;
+}
+
+.logout-btn {
+    margin-left: auto;
+    background-color: #6A5ACD;
+}
+
+.submit-btn:hover,
+.match-vibe-btn:hover,
+.logout-btn:hover {
+    background-color: #365899;
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.weather-info {
+    flex-basis: auto;
+    padding: 0.8rem;
+    margin-top: 2%;
+    margin-right: 2%;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    height: auto;
+    width: fit-content;
+}
+
+.seven-day-forecast .day {
+    margin-right: 0.5rem;
+}
+
+.hourly-forecast {
+    margin-top: 2%;
+    padding: 0.8rem;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    height: fit-content;
+    width: fit-content;
+}
+
+.matched-prompt {
+    width: fit-content;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    margin-top: 2%;
+}
+
+.weather-info p,
+.weather-info h2,
+.matched-prompt p,
+.seven-day-forecast .day p,
+.seven-day-forecast h2,
+.hourly-forecast h2,
+.hourly-forecast p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.seven-day-forecast .day p {
+    margin-top: 0.6rem;
+}
+
+.toggle-btn,
+.small-btn {
+    padding: 0.3rem 0.6rem;
+    border: 2px solid #4267B2;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #4267B2;
+}
+
+.toggle-btn:hover,
+.small-btn:hover {
+    background-color: #4267B2;
+    color: #FFFFFF;
+}
+
+.forecast-btn {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-right: 1.5rem;
+    border: none;
+    color: white;
+    background-color: #4267B2;
+    cursor: pointer;
+}
+
+.forecast-btn:hover {
+    background-color: #365899;
+}
+
+.weather-info,
+.hourly-forecast,
+.seven-day-forecast,
+.matched-prompt {
+    margin-bottom: 2px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.location-info h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.weather-info p,
+.hourly-forecast p,
+.seven-day-forecast .day p {
+    font-weight: 500;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 0.8rem;
+}
+
+.descriptive {
+    font-weight: bold;
+    color: #4267B2;
+}
+
+/* Media Queries */
+@media (max-width: 600px) {
+    .container,
+    .weather-info,
+    .hourly-forecast,
+    .seven-day-forecast,
+    .matched-prompt {
+        margin: 10px;
+        padding: 15px;
+        width: calc(100% - 20px); 
+        box-sizing: border-box; 
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .weather-form {
+        width: 100%;
+    }
+
+    .city-input {
+        width: calc(100% - 20px);
+        margin-bottom: 10px;
+    }
+
+    .submit-btn,
+    .forecast-btn,
+    .toggle-btn,
+    .small-btn,
+    .logout-btn {
+        width: 100%;
+        margin: 5px 0; 
+    }
+
+    .forecast-container,
+    .hourly-forecast .hour,
+    .seven-day-forecast .day {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .location-info h3 {
+        font-size: 1.1rem; 
+    }
+
+    .weather-info h2,
+    .hourly-forecast h2,
+    .seven-day-forecast h2 {
+        font-size: 1.3rem;
+    }
+
+    .descriptive {
+        display: block; 
+        font-size: 0.9rem; 
+    }
+
+    .seven-day-forecast .forecast-container {
+        flex-direction: column;
+        gap: none;
+    }
+
+    .seven-day-forecast .day {
+        width: 100%; 
+        margin-right: 0;
+        box-sizing: border-box;
+    }
+
+    .seven-day-forecast,
+    .hourly-forecast,
+    .weather-info {
+        width: auto; 
+        margin: 0; 
+        padding: 1em;
+    }
+
+    .location-info h3,
+    .weather-info h2,
+    .seven-day-forecast h2,
+    .hourly-forecast h2 {
+        font-size: 1.1rem;
+    }
+
+    .descriptive {
+        display: block; 
+        font-weight: 600;
+    }
+
+    .toggle-btn,
+    .forecast-btn,
+    .logout-btn,
+    .small-btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+}
+
+    .submit-btn {
+        margin-top: -3px;
+    }
+
+    .logout-btn {
+        margin-bottom: 15px;
+    }
+}
+</style>

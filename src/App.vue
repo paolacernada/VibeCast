@@ -1,6 +1,8 @@
 <template>
   <mainheader />
-  <router-view></router-view>
+  <div class="content">
+    <router-view></router-view>
+  </div>
 </template>
 
 
@@ -26,15 +28,21 @@ export default {
 }
 </script>
 
+<style scoped>
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5%;
+}
 
-<style scoped> header {
-   line-height: 1.5;
- }
+header {
+  line-height: 1.5;
+}
 
- header .wrapper {
-   display: flex;
-   place-items: flex-start;
-   flex-wrap: wrap;
- }
+header .wrapper {
+  display: flex;
+  place-items: flex-start;
+  flex-wrap: wrap;
+}
 </style>
-

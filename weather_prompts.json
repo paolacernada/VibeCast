@@ -1,42 +1,200 @@
 {
-    "0-15": {
-        "Sunny": "Bundle up and explore the icy outdoors. Great for making frosty art or snow angels in your yard.",
-        "Cloudy": "Ideal weather for indoor coziness. Enjoy a day of board games, warm drinks, and your favorite books.",
-        "Snowy": "Time for snow adventures! Build a snowman or fort, or cozy up for a movie marathon with hot cocoa."
+  "-5-10": {
+    "daytime": {
+      "Clear": "The sun's weak embrace barely stirs the frost. A day for contemplation indoors with a view of the stark beauty outside.",
+      "Partly cloudy": "Shards of sunlight pierce the clouded sky, a silver lining to the brisk day. Perfect for short, refreshing walks.",
+      "Overcast": "A blanket of clouds dims the day, a cue for cozy indoor activities. Time for warm beverages and cherished novels.",
+      "Fog": "A cloak of fog turns the world into a mysterious realm, inviting introspective journeys and serene photography.",
+      "Blizzard": "The furious dance of snow and wind crafts a whiteout landscape, a day for the safety and warmth of indoor havens.",
+      "Patchy light rain": "Sporadic whispers of rain tap against the windows, a subtle rhythm encouraging indoor creativity and relaxation.",
+      "Moderate snow": "A steady snowfall blankets the earth, transforming it into a serene, wintry canvas for the heart and soul.",
+      "Heavy snow": "A relentless snowstorm ushers in a silent, enveloping white, a time for warm gatherings and shared stories by the fire."
     },
-    "16-30": {
-        "Sunny": "Embrace the chilly sunshine with a brisk walk, or stay in and craft while basking in the natural light.",
-        "Cloudy": "The overcast skies call for a creative day indoors. Perfect for painting, crafting, or a DIY spa day.",
-        "Snowy": "Snowbound fun awaits outside, or create a winter wonderland indoors with paper snowflakes and decorations."
-    },
-    "31-45": {
-        "Sunny": "The air is crisp, and the sun is gentle. Perfect for a leisurely hike or an outdoor sketching session.",
-        "Cloudy": "A moody day for introspection and creativity. Write, play music, or start an indoor garden.",
-        "Rainy": "Rainy and refreshing. Whip up your favorite soup or enjoy the soothing sounds of rain with a cup of tea."
-    },
-    "46-60": {
-        "Sunny": "With the cool sun shining, it's ideal for cycling, jogging, or a picnic in the nearest park.",
-        "Cloudy": "Soft, diffused light makes today perfect for photography, indoor reading, or visiting a local museum.",
-        "Rainy": "Let the gentle rain inspire you. Write, paint, or take a peaceful walk with a waterproof jacket."
-    },
-    "61-75": {
-        "Sunny": "Perfect weather for outdoor fun. Visit a park, start a garden, or explore a new neighborhood.",
-        "Cloudy": "Mild and comfortable - ideal for a leisurely day exploring local shops or trying out a new caf\u00e9.",
-        "Rainy": "Warm rains bring a fresh perspective. Enjoy indoor crafts, baking, or watch the rain with a cozy blanket."
-    },
-    "76-90": {
-        "Sunny": "Sun-kissed days are here! Splash in a local pool, enjoy a homemade popsicle, or have a beach day.",
-        "Cloudy": "The warmth without the glare - enjoy a backyard hangout, outdoor yoga, or a relaxed bike ride.",
-        "Rainy": "A refreshing change. Have fun with indoor tropical-themed activities or relish the cool breeze post-rain."
-    },
-    "91-105": {
-        "Sunny": "Beat the heat with indoor fun - try a new recipe, start a book club, or have an indoor treasure hunt.",
-        "Cloudy": "Stay cool and creative. Organize an indoor photo shoot, craft session, or a board game marathon.",
-        "Rainy": "Steamy showers offer a break from the heat. Practice indoor gardening, yoga, or enjoy making fruit-infused water."
-    },
-    "106-125": {
-        "Sunny": "Keep cool and comfortable indoors. Try virtual tours of museums, online workout classes, or a movie day.",
-        "Cloudy": "Less intense but still hot. Perfect for indoor picnics, reading, or a DIY home spa day with cool, damp towels.",
-        "Rainy": "A rare, refreshing rain. Capture the moment with indoor photography or relax with soothing rain sounds."
+    "nighttime": {
+      "Clear": "Under a clear, cold sky, the stars seem to shimmer with ice. A night for stargazing, wrapped in layers of warmth.",
+      "Partly cloudy": "Clouds drift lazily, occasionally unveiling the moon's cold glow. An evening to peer into the night's shifting story.",
+      "Overcast": "The overcast darkness feels profound, urging quiet indoor pursuits. Perhaps a night for soothing music and deep rest.",
+      "Fog": "The night adorns itself with a foggy veil, transforming every light into a gentle halo of mystique.",
+      "Blizzard": "Night amplifies the blizzard's howl, a reminder of nature's might and the cozy sanctuary of home.",
+      "Patchy light rain": "Intermittent raindrops play a nocturne on the roof, a peaceful accompaniment to evening rest.",
+      "Moderate snow": "The night's silence is deepened by the soft cascade of snow, an invitation to quiet reflection and rest.",
+      "Heavy snow": "Under the cloak of night, heavy snowfall weaves a thick, white blanket, promising a world reborn at dawn."
     }
+  },
+  "11-25": {
+    "daytime": {
+      "Sunny": "A crisp clarity bathes the landscape, offering a fresh perspective on familiar scenes, perfect for invigorating walks.",
+      "Partly cloudy": "Dappled shadows play across the earth under a sky of fleeting clouds, an invitation to daydream and explore.",
+      "Overcast": "The monochrome sky casts a tranquil pall, ideal for reflective pursuits and the cozy comfort of a café corner.",
+      "Fog": "The world softens under a blanket of fog, transforming mundane paths into corridors of mystery and quietude.",
+      "Blizzard": "Nature's fury unleashes a whirlwind of snow, urging a retreat to the hearth for tales and togetherness.",
+      "Patchy light rain": "Gentle droplets sporadically dot the landscape, a tender reminder of nature's nurturing rhythm.",
+      "Moderate snow": "A steady descent of snowflakes adorns the world in wintry lace, crafting scenes of serene beauty.",
+      "Heavy snow": "The relentless snow swathes the world in silence, an invitation to introspection and the warmth of shared spaces."
+    },
+    "nighttime": {
+      "Clear": "The night sky, a jeweled canopy, inspires a deep connection with the cosmos, best enjoyed in quiet solitude or shared wonder.",
+      "Partly cloudy": "Moonlight filters through scudding clouds, casting a dynamic tapestry of light and shadow, perfect for contemplative night walks.",
+      "Overcast": "The dense night sky, a blanket of clouds, encourages inward journeys, perhaps with a book or soft music by the fireside.",
+      "Fog": "Fog enshrouds the night in mystery, turning each light into a beacon of solace against the enveloping grey.",
+      "Blizzard": "The night roars with the blizzard's might, a reminder of the cozy sanctuary your home provides against the tempest.",
+      "Patchy light rain": "The rhythmic patter of rain on the roof provides a soothing backdrop to a night of rest and rejuvenation.",
+      "Moderate snow": "The hush of snowfall at night promises a pristine dawn, an untouched world waiting beyond your window.",
+      "Heavy snow": "The heavy mantle of nocturnal snowfall transforms the landscape into a realm of quiet majesty and peaceful slumber."
+    }
+  },
+  "26-40": {
+    "daytime": {
+      "Sunny": "The gentle warmth of the sun beckons, a perfect day for a rejuvenating walk amidst the awakening nature.",
+      "Partly cloudy": "Intermittent sun and shade provide a delightful backdrop for an afternoon of exploration, capturing the beauty of fleeting moments.",
+      "Overcast": "The sky's soft, even light invites contemplation and creativity, an ideal setting for artistic endeavors or thoughtful reading.",
+      "Fog": "A mystical veil of fog transforms the familiar into the ethereal, inviting quiet walks through hushed landscapes.",
+      "Blizzard": "A fierce blizzard obscures the world, a day to find solace and warmth in shared stories and steaming mugs.",
+      "Patchy light rain": "Sporadic whispers of rain refresh the air, a gentle nudge towards introspection and the calm of indoor havens.",
+      "Moderate snow": "A steady cloak of snow dresses the earth, a silent invitation to slow down and marvel at the winter's grace.",
+      "Heavy snow": "The world falls silent under the heavy snow's embrace, a time for inward reflection and the warmth of connection."
+    },
+    "nighttime": {
+      "Clear": "Under the starry expanse, the night whispers ancient tales, a serene companion to quiet contemplation or shared dreams.",
+      "Partly cloudy": "Moonlit shadows dance through parting clouds, a spectacle of light and darkness that invites late-night reveries.",
+      "Overcast": "The impenetrable night sky fosters a sense of seclusion, perfect for a night of deep rest or creative musings.",
+      "Fog": "Enveloped in nocturnal fog, the world softens around you, offering a blanket of serenity and a pause from the day's cares.",
+      "Blizzard": "The howl of the blizzard outside contrasts with the calm within, offering a fortress of warmth against the storm's rage.",
+      "Patchy light rain": "The gentle rhythm of night rain on the window pane serenades the soul, encouraging peaceful sleep or reflective thought.",
+      "Moderate snow": "The quietude of nighttime snowfall lays the groundwork for a morning of pristine beauty, promising a world reborn.",
+      "Heavy snow": "In the deep of night, the heavy snowfall weaves a tapestry of silence, a blanket under which the world dreams."
+    }
+  },
+  "41-55": {
+    "daytime": {
+      "Sunny": "A gentle sun brightens the day, coaxing life and color from every corner, inviting exploration and outdoor joys.",
+      "Partly cloudy": "Shadows and light play across the landscape, a day of shifting skies and mild breezes, perfect for reflective moments.",
+      "Overcast": "A blanket of clouds casts a soft light, ideal for capturing the vivid details of life in art or thought.",
+      "Fog": "The world softens under a veil of fog, every shape and sound muffled, a day for introspection and calm.",
+      "Patchy light rain": "Intermittent droplets dance on surfaces, painting the day with a refreshing unpredictability, urging indoor creativity.",
+      "Light rain": "A steady, gentle rain nourishes the earth, a soothing backdrop for indoor pursuits or peaceful walks under an umbrella.",
+      "Moderate rain": "The steady drum of rain sets the rhythm of the day, an invitation to slow down and find joy in the indoors.",
+      "Thundery outbreaks possible": "The air buzzes with potential, a day when the sky might erupt in spectacle, a time for cautious awe."
+    },
+    "nighttime": {
+      "Clear": "The night sky, clear and vast, beckons with stars and possibilities, a backdrop for dreams and late conversations.",
+      "Partly cloudy": "Clouds drift across the moon, casting fleeting shadows and silver light, a night of beauty in transition.",
+      "Overcast": "The overcast sky wraps the night in a thick blanket, a cue for deep rest and the comfort of warm blankets.",
+      "Fog": "Nighttime fog blurs the edges of the world, a hushed invitation to stay in and savor the quiet.",
+      "Patchy light rain": "Sporadic raindrops tap against windows, a gentle reminder of the world outside, comforting in its persistence.",
+      "Light rain": "The soft rhythm of night rain, a natural lullaby, inviting rest and the soothing embrace of sleep.",
+      "Moderate rain": "Rain falls in a steady cadence, a constant presence through the night, a promise of renewal come morning.",
+      "Thundery outbreaks possible": "The night holds a charged silence, broken occasionally by distant rumbles, a reminder of nature's might and mystery."
+    }
+  },
+  "56-70": {
+    "daytime": {
+      "Sunny": "The sun's gentle warmth invites you outside, perfect for a day at the park or a leisurely stroll through the city.",
+      "Partly cloudy": "A picturesque sky, with sun and clouds in harmony, offers a splendid backdrop for outdoor photography or painting.",
+      "Overcast": "The diffuse light of an overcast sky softens the world, ideal for moments of introspection or a cozy café visit.",
+      "Patchy light rain": "A light, sporadic rain refreshes the air, a sweet melody for moments of relaxation or creativity indoors.",
+      "Light rain": "A soft rain envelops the day, a nudge towards peaceful indoor activities or a contemplative walk with an umbrella.",
+      "Moderate rain": "The rhythm of moderate rain sets a serene pace for the day, perfect for reading by the window or creative projects.",
+      "Thundery outbreaks possible": "The possibility of thunder adds an edge to the day, a dramatic backdrop for writing or artistic endeavors.",
+      "Light rain shower": "Sudden light showers bring a sense of renewal, a quick pause that refreshes the spirit and the landscape."
+    },
+    "nighttime": {
+      "Clear": "A clear night sky, warm and inviting, perfect for an outdoor gathering or a quiet moment under the stars.",
+      "Partly cloudy": "Clouds adrift in the night sky create a moving tapestry, setting a reflective mood for evening contemplations.",
+      "Overcast": "The night, wrapped in clouds, holds a snug, insular feel, conducive to winding down and finding rest.",
+      "Patchy light rain": "Intermittent light rain taps a soothing rhythm against the window, a peaceful soundtrack for restful sleep.",
+      "Light rain": "The gentle pitter-patter of night rain brings a sense of tranquility, perfect for drifting off to sleep.",
+      "Moderate rain": "A steady night rain washes over the world, a cleansing sound that invites deep, restorative rest.",
+      "Thundery outbreaks possible": "The distant rumble of potential thunderstorms adds a layer of anticipation to the night, a natural lullaby for some.",
+      "Light rain shower": "Brief showers sprinkle the night with freshness, a fleeting interruption that enhances the sense of calm."
+    }
+  },
+  "71-85": {
+    "daytime": {
+      "Sunny": "The radiant sun fills the day with vibrant energy, perfect for a beach adventure or a lively backyard barbecue.",
+      "Partly cloudy": "Dappled sunlight through playful clouds invites you to a day of exploration, perhaps a scenic hike or a leisurely bike ride.",
+      "Overcast": "The hazy overcast sky offers a respite from the sun's intensity, a great opportunity for outdoor festivals or markets.",
+      "Patchy light rain": "Sporadic sprinkles add a refreshing twist to the day, enlivening the senses and the greenery around you.",
+      "Light rain": "A gentle rain cools the air, ideal for savoring the aroma of rain-soaked earth on a covered porch or pavilion.",
+      "Moderate rain": "The steady beat of moderate rain invites indoor gatherings, maybe a lively game day or a creative workshop.",
+      "Thundery outbreaks possible": "The thrill of potential thunderstorms energizes the atmosphere, promising dynamic skies and electrifying moments.",
+      "Light rain shower": "Intermittent rain showers cool the landscape, a quick refresh that enhances the joy of summertime activities."
+    },
+    "nighttime": {
+      "Clear": "Warm, clear nights under a starlit sky beckon for alfresco dining or a moonlit stroll through the neighborhood.",
+      "Partly cloudy": "The interplay of clouds and moonlight casts a magical glow, perfect for late-night chats on the balcony or garden.",
+      "Overcast": "A balmy, cloud-covered night sets the stage for open-air cinema experiences or listening to the symphony of nocturnal wildlife.",
+      "Patchy light rain": "Light, patchy rain at night brings a melody to the darkness, a natural lullaby to soothe you into dreams.",
+      "Light rain": "The soft whispers of nighttime rain provide a tranquil backdrop for deep conversations or contemplative solitude.",
+      "Moderate rain": "The enveloping sound of night rain creates a cocoon of peace, ideal for unwinding and drifting into deep sleep.",
+      "Thundery outbreaks possible": "The distant rumble of thunder under the night sky adds a sense of awe and wonder to the evening's possibilities.",
+      "Light rain shower": "Sudden night showers bring a fresh coolness, an invigorating surprise that refreshes the soul and the sleeping city."
+    }
+  },
+  "86-100": {
+    "daytime": {
+      "Sunny": "The blazing sun commands the sky, a call for pool parties, or seeking solace in cool, shaded retreats.",
+      "Partly cloudy": "Occasional clouds offer fleeting shade, a brief respite perfect for early morning jogs or twilight gatherings.",
+      "Overcast": "A veil of clouds softens the heat's edge, making it ideal for long, languid walks in nature's embrace.",
+      "Patchy light rain": "The rare drizzle brings a momentary cool, an unexpected blessing that invites playful dashes through the rain.",
+      "Light rain": "Gentle rains offer a soothing balm to the day's heat, perfect for enjoying the symphony of rain from a cozy veranda.",
+      "Moderate rain": "When rain pours down in earnest, it's an invitation to indoor creativity, perhaps a day of art, music, or culinary experiments.",
+      "Thundery outbreaks possible": "The promise of thunderstorms brings a dynamic energy, perfect for watching the sky's drama unfold from a safe, comfortable spot.",
+      "Light rain shower": "Sudden showers are a delightful surprise, cooling the air and the spirit, an invitation to dance in the rain, if only for a moment."
+    },
+    "nighttime": {
+      "Clear": "The clear, warm nights are for stargazing by the pool or enjoying exotic night blooms in a fragrant garden.",
+      "Partly cloudy": "Clouds drifting in the warm night sky create a dance of shadows and light, perfect for nighttime festivals or open-air concerts.",
+      "Overcast": "The warm blanket of clouds holds the day's heat, setting a sultry stage for midnight feasts or storytelling under the canopy.",
+      "Patchy light rain": "Intermittent raindrops cool the night air, refreshing the earth and inviting peaceful sleep to the sound of nature's lullaby.",
+      "Light rain": "Soft nighttime rains wash away the day's heat, a perfect backdrop for reflective journaling or sharing dreams with loved ones.",
+      "Moderate rain": "The steady rhythm of moderate nighttime rain is the heart's metronome, guiding you towards restful sleep and sweet dreams.",
+      "Thundery outbreaks possible": "Nighttime thunder adds a thrill to the air, an electric anticipation of the cooling that the storms promise.",
+      "Light rain shower": "Brief nocturnal showers bring a freshness that stirs the soul, renewing the night and the spirit alike."
+    }
+  },
+  "101-115": {
+    "daytime": {
+      "Sunny": "In this sweltering heat, the sun reigns supreme, compelling a retreat to the coolest indoor sanctuaries or refreshing water bodies.",
+      "Partly cloudy": "The sparse clouds offer scant respite from the searing heat, ideal for indoor art projects or delving into the pages of an engrossing novel.",
+      "Overcast": "The overcast sky does little to temper the blaze, suggesting a day spent in the solace of air-conditioned museums or quiet, dimly lit cafes.",
+      "Patchy light rain": "A light sprinkle feels like a mirage in this heat, a fleeting relief that refreshes the senses and revives wilted gardens.",
+      "Light rain": "The light rain scarcely cuts through the heat, yet it's a cue for indoor musical sessions or watching the world through misted windows.",
+      "Moderate rain": "When the rain intensifies, it's a rare chance to witness the steam rise from the hot ground, a spectacle best viewed from a cozy indoor nook.",
+      "Thundery outbreaks possible": "Thunderstorms bring a dramatic break to the relentless heat, perfect for an indoor movie marathon that mimics the storm's intensity.",
+      "Light rain shower": "The brief respite of a shower coaxes steam from hot pavements, an ephemeral beauty best appreciated from a secure, cool vantage point."
+    },
+    "nighttime": {
+      "Clear": "The night offers little relief from the day's furnace, urging creative indoor cooling strategies or nocturnal swims under starlit skies.",
+      "Partly cloudy": "Clouds waft through the sultry night, perhaps an impromptu indoor camping experience with chilled treats and whispered stories.",
+      "Overcast": "The warm, cloud-laden air feels heavy, a night for light, airy fabrics and dreams of cooler climes, perhaps fueled by tales of icy adventures.",
+      "Patchy light rain": "The night's sparse raindrops are like nature's lullaby, a gentle reminder of the world's rhythms, coaxing you into a restful, if warm, sleep.",
+      "Light rain": "The soft nocturnal rain is a balm, dimming the heat's memory and setting the stage for serene, if warm, night-time reflections.",
+      "Moderate rain": "A steady nocturnal downpour is a rare gift, an opportunity for nighttime storytelling, with the rain providing a rhythmic backdrop.",
+      "Thundery outbreaks possible": "The night's thunderous potential adds a layer of anticipation, each flash a reminder of the day's heat and the night's possible reprieve.",
+      "Light rain shower": "Intermittent showers stir the stagnant heat, perhaps the time to indulge in cool, fruity desserts or iced beverages, savoring each chilled sip."
+    }
+  },
+  "116-125": {
+    "daytime": {
+      "Sunny": "The relentless blaze of the sun turns the world into an oven. Indoor retreats become sanctuaries for creative pursuits and virtual exploration.",
+      "Partly cloudy": "Sparse clouds provide a visual respite but little cooling. The day is for indoor gardening, where every splash of water feels like relief.",
+      "Overcast": "The cloud cover only slightly diffuses the solar assault. It's a day for slow, languid activities in the cooler corners of your home.",
+      "Patchy light rain": "The rare droplets evaporate before they touch the ground, a tease of relief that calls for homemade iced treats and chilled drinks.",
+      "Light rain": "Light rain barely makes a dent in the heat, but it's an excuse to linger by the window, feeling the slight coolness of the glass.",
+      "Moderate rain": "The moderate rain is a spectacle in this heat, creating steamy veils over streets, best observed from the comfort of an air-conditioned room.",
+      "Thundery outbreaks possible": "Thunder in this heat feels otherworldly, an invitation to lose yourself in epic tales or movies that match the day's drama.",
+      "Light rain shower": "A brief shower stirs the hot air, a momentary refreshment that's best complemented by light, airy indoor activities and plenty of water."
+    },
+    "nighttime": {
+      "Clear": "The night offers scant cooling, with the clear sky echoing the day's intensity. Indoor, night-time rituals focus on relaxation and cool comfort.",
+      "Partly cloudy": "Night clouds drift like phantoms in the heat, a backdrop for quiet, solitary reflection or the shared intimacy of late-night conversations.",
+      "Overcast": "The oppressive night heat is made denser by clouds, urging restful indoor activities and preparations for a hopefully cooler dawn.",
+      "Patchy light rain": "Intermittent night rain brings a fleeting touch of cool, a subtle invitation to nocturnal meditations or journaling by the sound of rain.",
+      "Light rain": "The light rain at night is a gentle reprieve, a backdrop for soothing music or the soft patter of rain on windows, promising a less restless sleep.",
+      "Moderate rain": "Moderate rain breaks the night's stillness, an opportunity for introspective thought or creative expression, inspired by the rhythmic rain.",
+      "Thundery outbreaks possible": "The potential for nocturnal thunder adds a layer of suspense, an energetic counterpoint to the day's lethargy, stirring the imagination.",
+      "Light rain shower": "Night showers briefly disrupt the heat, perhaps a chance for impromptu indoor games or storytelling, making the most of the cooler moments."
+    }
+  }
 }

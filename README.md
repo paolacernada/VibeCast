@@ -27,13 +27,13 @@ Follow these simple steps to get WeatherVibe running on your local machine:
 - Install dependencies: `npm install`
 - Make sure you have MongoDB running on your machine. If not, install and start MongoDB.
 - Create a `.env` file in the backend root directory and add your database connection string and other environment variables as needed.
-- Start the server: `npm start`
+- Start the server: `node server.js`
 
 #### 3. Set Up the Frontend:
 - Open a new terminal tab or window.
 - Navigate to the frontend directory: `cd frontend`
 - Install dependencies: `npm install`
-- Start the Vue.js application: `npm run serve`
+- Start the Vue.js application: `npm run dev`
 - Your default web browser should open automatically with the WeatherVibe app running.
 
 #### 4. Sign Up/Sign In:
