@@ -220,7 +220,7 @@ export default {
                 this.clearBackgroundImage();
             }
 
-            this.matchedPrompt = this.getMatchedPrompt(condition) || "Enjoy the weather, no matter the vibe!";
+            this.matchedPrompt = this.getMatchedPrompt(condition) || "Sunshine or Rain, Our Spirits Remain Unchained!";
         },
         logout() {
             localStorage.removeItem('isAuthenticated');
@@ -290,16 +290,37 @@ export default {
             const conditionMap = {
                 "Light rain shower": "light-rain-shower.png",
                 "Thundery outbreaks possible": "thundery-outbreaks-possible.png",
+                "Patchy light rain with thunder": "thundery-outbreaks-possible.png",
+                "Moderate or heavy rain with thunder": "thundery-outbreaks-possible.png",
+                "Patchy light snow with thunder": "thundery-outbreaks-possible.png",
                 "Heavy snow": "heavy-snow.png",
+                "Moderate or heavy snow showers": "heavy-snow.png",
+                "Patchy heavy snow": "heavy-snow.png",
+                "Blowing snow": "heavy-snow.png",
                 "Moderate snow": "moderate-snow.png",
+                "Light snow": "moderate-snow.png",
+                "Light snow showers": "moderate-snow.png",
+                "Patchy moderate snow": "moderate-snow.png",
                 "Patchy light rain": "patchy-light-rain.png",
+                "Patchy rain nearby": "patchy-light-rain.png",
                 "Light rain": "light-rain.png",
+                "Light rain shower": "light-rain.png",
+                "Moderate rain at times": "light-rain.png",
+                "Moderate rain": "light-rain.png",
+                "Patchy light drizzle": "light-rain.png",
+                "Light drizzle": "light-rain.png",
                 "Blizzard": "blizzard.png",
                 "Fog": "fog.png",
+                "Freezing fog": "fog.png",
                 "Overcast": "overcast.png",
                 "Partly cloudy": "partly-cloudy.png",
                 "Sunny": "sunny.png",
-                "Clear": "clear.png"
+                "Clear": "clear.png",
+                "Cloudy": "cloudy.png",
+                "Mist": "mist.png",
+                "Heavy rain": "heavy-rain.png",
+                "Moderate or heavy rain shower": "heavy-rain.png",
+                "Torrential rain shower": "heavy-rain.png",
             };
 
             return conditionMap[condition] || null;
@@ -362,8 +383,6 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     color: #1C1E21;
-    background-size: cover;
-    background-position: center;
 }
 
 .header {
@@ -537,7 +556,7 @@ export default {
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 2.5s ease, transform 2.5s ease;
 }
 
 .fade-enter,
