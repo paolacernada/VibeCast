@@ -151,8 +151,8 @@ export default {
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             }
-
-
+            // Clear the ZIP code from the input after fetching the weather data
+            this.zipCode = '';
         },
         async fetchCurrentWeather(apiKey) {
             const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.zipCode}&tz=${this.userTimezone}`;
