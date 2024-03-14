@@ -2,7 +2,7 @@
     <div class="container">
         <div class="header">
             <form @submit.prevent="fetchWeatherData" class="weather-form">
-                <input type="text" v-model="city" placeholder="Enter city name" class="city-input">
+                <input type="text" v-model="zipCode" placeholder="Enter ZIP code" class="city-input">
                 <button type="submit" class="submit-btn">Get Weather</button>
             </form>
             <button type="button" @click="matchVibe" class="forecast-btn"
@@ -57,7 +57,6 @@
     </div>
 </template>
 
-
 <script>
 import weatherPrompts from '../../weather_prompts.json';
 
@@ -65,7 +64,7 @@ export default {
     name: 'weatherhome',
     data() {
         return {
-            city: '',
+            zipCode: '',
             weather: null,
             matchedPrompt: null,
             isDay: null,
@@ -122,7 +121,7 @@ export default {
             }
         },
         async fetchCurrentWeather(apiKey) {
-            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.city}&tz=${this.userTimezone}`;
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.zipCode}&tz=${this.userTimezone}`;
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch current weather data');
             const data = await response.json();
@@ -131,7 +130,7 @@ export default {
             this.apiCondition = data.current.condition.text;
         },
         async fetchSevenDayForecast(apiKey) {
-            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.city}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
             const response = await fetch(url);
             if (!response.ok) throw new Error('Failed to fetch 7-day forecast data');
             const data = await response.json();
@@ -140,7 +139,7 @@ export default {
             this.sevenDayForecast = data.forecast.forecastday.slice(1); // Start from index 1 to exclude today
         },
         async fetchForecast(apiKey) {
-            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.city}&days=1&aqi=no&alerts=no&tz=${this.userTimezone}`;
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=1&aqi=no&alerts=no&tz=${this.userTimezone}`;
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch forecast data');
             const data = await response.json();
@@ -260,9 +259,9 @@ export default {
 
 .container {
     max-width: 800px;
-    width: 100%;
-    margin: auto;
-    padding: 1rem;
+    width: auto;
+    margin: 1em;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: left;
@@ -354,7 +353,7 @@ export default {
 }
 
 .matched-prompt {
-    width: auto;
+    width: fit-content;
     padding: 1rem;
     border-radius: 10px;
     background-color: #FFFFFF;
@@ -408,5 +407,13 @@ export default {
 
 .forecast-btn:hover {
     background-color: #365899;
+}
+
+.weather-info, .hourly-forecast, .seven-day-forecast, .matched-prompt {
+    margin-bottom: 2px;
+    padding: 20px; 
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.05);
 }
 </style>
