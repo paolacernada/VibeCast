@@ -643,10 +643,6 @@ body {
         box-sizing: border-box;
     }
 
-    .header {
-        flex-direction: column;
-    }
-
     .weather-form {
         width: 100%;
     }
