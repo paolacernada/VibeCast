@@ -10,9 +10,11 @@
             <button @click="logout" class="logout-btn">Logout</button>
         </div>
         <!-- Matched Prompt Section -->
-        <div v-if="matchedPrompt && matchedVibeClicked" class="matched-prompt">
-            <p>{{ matchedPrompt }}</p>
-        </div>
+        <transition name="fade">
+            <div v-if="matchedPrompt && matchedVibeClicked" class="matched-prompt">
+                <p>{{ matchedPrompt }}</p>
+            </div>
+        </transition>
         <!-- Weather Info Section -->
         <div v-if="weather && !showHourlyForecast && !showSevenDayForecast" class="weather-info">
             <div class="location-info">
@@ -20,7 +22,7 @@
             </div>
             <h2>Now</h2>
             <button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
-        'Fahrenheit' }}</button>
+                'Fahrenheit' }}</button>
             <p><span class="descriptive">Temperature:</span> {{ displayTemperature }}°{{ tempUnit }}</p>
             <p><span class="descriptive">Feels Like:</span> {{ displayFeelsLike }}°{{ tempUnit }}</p>
             <p><span class="descriptive">Humidity:</span> {{ weather.humidity }}%</p>
@@ -36,12 +38,12 @@
             </div>
             <h2>Hourly Forecast</h2>
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
-        'Celsius' : 'Fahrenheit' }}</button>
+                'Celsius' : 'Fahrenheit' }}</button>
             <div class="hour" v-for="(hour, index) in next5HoursForecast" :key="index">
                 <p><span class="descriptive">{{ formatHour(hour.time) }}:</span> {{ formatHourlyTemp(hour.temp_f,
-        hour.temp_c) }}°{{ hourlyTempUnit }},
+                hour.temp_c) }}°{{ hourlyTempUnit }},
                     <strong>Feels like: </strong>{{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{
-        hourlyTempUnit }}, <strong>Cloud:</strong>
+                hourlyTempUnit }}, <strong>Cloud:</strong>
                     {{ hour.cloud }}%, <strong>Humidity: </strong>{{ hour.humidity }}%, {{ hour.condition.text }}
                 </p>
             </div>
@@ -204,23 +206,22 @@ export default {
             return Math.round(celsius * 9 / 5 + 32);
         },
         matchVibe() {
-  if (!this.weather) return;
+            if (!this.weather) return;
 
-  let condition = this.normalizeConditionText(this.apiCondition);
-  this.matchedVibeClicked = true;
+            let condition = this.normalizeConditionText(this.apiCondition);
+            this.matchedVibeClicked = true;
 
-  // Use the condition directly to get the background image
-  this.backgroundImage = this.getBackgroundImage(condition);
-  if (this.backgroundImage) {
-    document.body.style.backgroundImage = `url('/backgrounds/${this.backgroundImage}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
-  } else {
-    this.clearBackgroundImage();
-  }
+            this.backgroundImage = this.getBackgroundImage(condition);
+            if (this.backgroundImage) {
+                document.body.style.backgroundImage = `url('/backgrounds/${this.backgroundImage}')`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+            } else {
+                this.clearBackgroundImage();
+            }
 
-  this.matchedPrompt = this.getMatchedPrompt(condition) || "Enjoy the weather, no matter the vibe!";
-},
+            this.matchedPrompt = this.getMatchedPrompt(condition) || "Enjoy the weather, no matter the vibe!";
+        },
         logout() {
             localStorage.removeItem('isAuthenticated');
             this.$router.push('/');
@@ -304,18 +305,18 @@ export default {
             return conditionMap[condition] || null;
         },
         getMatchedPrompt(condition) {
-  const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
-  const tempRanges = Object.keys(weatherPrompts);
+            const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
+            const tempRanges = Object.keys(weatherPrompts);
 
-  for (let range of tempRanges) {
-    const [min, max] = range.split('-').map(Number);
-    if (temperatureFahrenheit >= min && temperatureFahrenheit <= max) {
-      const { daytime, nighttime } = weatherPrompts[range];
-      return daytime[condition] || nighttime[condition];
-    }
-  }
-  return null;
-},
+            for (let range of tempRanges) {
+                const [min, max] = range.split('-').map(Number);
+                if (temperatureFahrenheit >= min && temperatureFahrenheit <= max) {
+                    const { daytime, nighttime } = weatherPrompts[range];
+                    return daytime[condition] || nighttime[condition];
+                }
+            }
+            return null;
+        },
         normalizeConditionText(conditionText) {
             return conditionText.trim().replace(/\s+/g, ' ');
         },
@@ -323,9 +324,9 @@ export default {
             document.body.style.backgroundImage = 'none';
         },
         clearBackgroundImage() {
-  this.backgroundImage = null;
-  document.body.style.backgroundImage = 'none';
-},
+            this.backgroundImage = null;
+            document.body.style.backgroundImage = 'none';
+        },
     },
 };
 </script>
@@ -532,6 +533,28 @@ export default {
 .descriptive {
     font-weight: bold;
     color: #4267B2;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-enter,
+.fade-enter-to,
+.fade-leave-to {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-enter-from,
+.fade-leave-active {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.fade-leave-active {
+    transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 /* Media Queries */
