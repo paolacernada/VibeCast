@@ -113,11 +113,20 @@ export default {
         },
         next5HoursForecast() {
             const currentHour = new Date().getHours();
+            const currentDay = new Date().getDate();
             return this.hourlyForecast.filter(hour => {
                 const hourDate = new Date(hour.time);
                 const hourOfForecast = hourDate.getHours();
-                return hourOfForecast > currentHour && hourOfForecast <= currentHour + 5;
-            });
+                const dayOfForecast = hourDate.getDate();
+
+                // Check if the forecast hour is for the current or next day
+                const isToday = dayOfForecast === currentDay;
+                const isNextDay = dayOfForecast === currentDay + 1;
+
+                // If it's today, return hours greater than the current hour
+                // If it's the next day, include any hour since it's within the next 5-hour window
+                return (isToday && hourOfForecast >= currentHour) || isNextDay;
+            }).slice(0, 5); // Limit to the next 5 hours
         }
     },
     methods: {
@@ -157,11 +166,38 @@ export default {
             this.sevenDayForecast = data.forecast.forecastday.slice(1); // Start from index 1 to exclude today
         },
         async fetchForecast(apiKey) {
-            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=1&aqi=no&alerts=no&tz=${this.userTimezone}`;
+            const currentHour = new Date().getHours();
+            let daysToFetch = 1; // Default to fetching 1 day of forecast
+
+            // If it's late in the day, fetch the forecast for an additional day
+            if (currentHour > 18) {
+                daysToFetch = 2; // Fetch forecast for the next 2 days to include the next day's hourly forecast
+            }
+
+            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=${daysToFetch}&aqi=no&alerts=no`;
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch forecast data');
             const data = await response.json();
-            this.hourlyForecast = data.forecast.forecastday[0].hour;
+
+            // Determine which day's forecast to use based on the current hour
+            const forecastIndex = currentHour > 18 ? 1 : 0; // Use today's forecast if before 6 PM, otherwise use tomorrow's
+            this.hourlyForecast = data.forecast.forecastday[forecastIndex].hour;
+        },
+        next5HoursForecast() {
+            const currentHour = new Date().getHours();
+            let filteredHours;
+
+            if (currentHour > 18) { // If fetching for the next day, include all available hours
+                filteredHours = this.hourlyForecast;
+            } else { // Otherwise, filter for the next 5 hours
+                filteredHours = this.hourlyForecast.filter(hour => {
+                    const hourDate = new Date(hour.time);
+                    const hourOfForecast = hourDate.getHours();
+                    return hourOfForecast > currentHour && hourOfForecast <= currentHour + 5;
+                });
+            }
+
+            return filteredHours;
         },
         convertToFahrenheit(celsius) {
             return Math.round(celsius * 9 / 5 + 32);
@@ -461,6 +497,7 @@ export default {
 
 /* Media Queries */
 @media (max-width: 600px) {
+
     .container,
     .weather-info,
     .hourly-forecast,
@@ -468,8 +505,8 @@ export default {
     .matched-prompt {
         margin: 10px;
         padding: 15px;
-        width: calc(100% - 20px); 
-        box-sizing: border-box; 
+        width: calc(100% - 20px);
+        box-sizing: border-box;
     }
 
     .header {
@@ -491,7 +528,7 @@ export default {
     .small-btn,
     .logout-btn {
         width: 100%;
-        margin: 5px 0; 
+        margin: 5px 0;
     }
 
     .forecast-container,
@@ -502,7 +539,7 @@ export default {
     }
 
     .location-info h3 {
-        font-size: 1.1rem; 
+        font-size: 1.1rem;
     }
 
     .weather-info h2,
@@ -512,8 +549,8 @@ export default {
     }
 
     .descriptive {
-        display: block; 
-        font-size: 0.9rem; 
+        display: block;
+        font-size: 0.9rem;
     }
 
     .seven-day-forecast .forecast-container {
@@ -522,7 +559,7 @@ export default {
     }
 
     .seven-day-forecast .day {
-        width: 100%; 
+        width: 100%;
         margin-right: 0;
         box-sizing: border-box;
     }
@@ -530,8 +567,8 @@ export default {
     .seven-day-forecast,
     .hourly-forecast,
     .weather-info {
-        width: auto; 
-        margin: 0; 
+        width: auto;
+        margin: 0;
         padding: 1em;
     }
 
@@ -543,7 +580,7 @@ export default {
     }
 
     .descriptive {
-        display: block; 
+        display: block;
         font-weight: 600;
     }
 
@@ -553,7 +590,7 @@ export default {
     .small-btn {
         width: 100%;
         margin-bottom: 0.5rem;
-}
+    }
 
     .submit-btn {
         margin-top: -3px;
