@@ -282,7 +282,7 @@ export default {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: left;
+    align-items: center;
     background-color: #F0F2F5;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -295,6 +295,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    margin-bottom: 15px;
 }
 
 .weather-form {
