@@ -380,8 +380,8 @@ export default {
 .container {
     max-width: 800px;
     width: auto;
-    margin: 1em;
-    padding: 20px;
+    margin: 0.6em;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -397,7 +397,6 @@ export default {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 15px;
 }
 
 .weather-form {
