@@ -15,6 +15,9 @@
         </div>
         <!-- Weather Info Section -->
         <div v-if="weather && !showHourlyForecast && !showSevenDayForecast" class="weather-info">
+            <div class="location-info">
+                <h3>{{ cityName }}, {{ regionName }}</h3>
+            </div>
             <h2>Now</h2>
             <button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
                 'Fahrenheit' }}</button>
@@ -28,6 +31,9 @@
         </div>
         <!-- Hourly Forecast Section -->
         <div v-if="showHourlyForecast" class="hourly-forecast">
+            <div class="location-info">
+                <h3>{{ cityName }}, {{ regionName }}</h3>
+            </div>
             <h2>5 Hour Forecast</h2>
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
                 'Celsius' : 'Fahrenheit' }}</button>
@@ -40,6 +46,9 @@
         </div>
         <!-- 7-day Forecast Section -->
         <div v-if="showSevenDayForecast" class="seven-day-forecast">
+            <div class="location-info">
+                <h3>{{ cityName }}, {{ regionName }}</h3>
+            </div>
             <h2>7-day Forecast</h2>
             <button @click="toggleSevenDayTempUnit" class="toggle-btn small-btn">
                 Switch to {{ sevenDayTempUnit === 'F' ? 'Celsius' : 'Fahrenheit' }}
@@ -78,6 +87,8 @@ export default {
             showHourlyForecast: false,
             showSevenDayForecast: false,
             matchedVibeClicked: false,
+            cityName: '',
+            regionName: '',
         };
     },
     computed: {
@@ -128,6 +139,8 @@ export default {
             this.weather = data.current;
             this.isDay = data.current.is_day;
             this.apiCondition = data.current.condition.text;
+            this.cityName = data.location.name;
+            this.regionName = data.location.region;
         },
         async fetchSevenDayForecast(apiKey) {
             const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
@@ -154,7 +167,7 @@ export default {
             const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
             let condition = this.apiCondition;
             const isDayTime = this.isDay === 1;
-            this.matchedVibeClicked = true; // Ensure this is set to true when the method is called
+            this.matchedVibeClicked = true;
 
             // Iterating through each temperature range to find a match
             for (let tempRange in weatherPrompts) {
@@ -409,11 +422,20 @@ export default {
     background-color: #365899;
 }
 
-.weather-info, .hourly-forecast, .seven-day-forecast, .matched-prompt {
+.weather-info,
+.hourly-forecast,
+.seven-day-forecast,
+.matched-prompt {
     margin-bottom: 2px;
-    padding: 20px; 
+    padding: 20px;
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.location-info h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #333;
 }
 </style>
