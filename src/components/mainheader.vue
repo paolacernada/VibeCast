@@ -15,7 +15,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(80, 125, 188, 0.95);
+  background-color: rgba(80, 125, 188, 0.85);
   color: #FFFFFF;
   padding: 0.5rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);

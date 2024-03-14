@@ -2,7 +2,8 @@
     <div class="container">
         <div class="header">
             <form @submit.prevent="fetchWeatherData" class="weather-form">
-                <input type="text" v-model="zipCode" placeholder="Enter ZIP code" class="city-input" @focus="clearZipCode">
+                <input type="text" v-model="zipCode" placeholder="Enter ZIP code" class="city-input"
+                    @focus="clearZipCode">
                 <button type="submit" class="submit-btn">Get Weather</button>
             </form>
             <button type="button" @click="matchVibe" class="forecast-btn"
@@ -163,6 +164,8 @@ export default {
             this.cityName = data.location.name;
             this.regionName = data.location.region;
             this.locationTimezone = data.location.tz_id;
+            // future note
+            // remove line below to only show image on Match My Vibe
             this.getBackground();
         },
         async fetchSevenDayForecast(apiKey) {
@@ -214,6 +217,7 @@ export default {
 
             let condition = this.normalizeConditionText(this.apiCondition);
             this.matchedVibeClicked = true;
+            // Only call getBackground() here for "Match My Vibe"
             this.getBackground();
 
             this.matchedPrompt = this.getMatchedPrompt(condition) || "Sunshine or Rain, Our Spirits Remain Unchained!";
@@ -424,7 +428,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #F0F2F5;
+    background-color: rgba(240, 242, 245, 0.75);
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -530,6 +534,10 @@ export default {
     margin: 0.5rem 0;
     font-size: 0.9rem;
     line-height: 1.7;
+}
+
+.matched-prompt p {
+    color: #6A5ACD;
 }
 
 .seven-day-forecast .day p {
