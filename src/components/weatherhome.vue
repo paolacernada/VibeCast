@@ -4,23 +4,30 @@
             <form @submit.prevent="fetchWeatherData" class="weather-form">
                 <input type="text" v-model="city" placeholder="Enter city name" class="city-input">
                 <button type="submit" class="submit-btn">Get Weather</button>
-                <button type="button" @click="matchVibe" class="match-vibe-btn" v-if="weather">Match My Vibe</button>
             </form>
+            <button type="button" @click="matchVibe" class="forecast-btn"
+                v-if="weather && !showHourlyForecast && !showSevenDayForecast">Match My Vibe</button>
             <button @click="logout" class="logout-btn">Logout</button>
         </div>
-        <div v-if="weather" class="weather-info">
+        <!-- Matched Prompt Section -->
+        <div v-if="matchedPrompt && matchedVibeClicked" class="matched-prompt">
+            <p>{{ matchedPrompt }}</p>
+        </div>
+        <!-- Weather Info Section -->
+        <div v-if="weather && !showHourlyForecast && !showSevenDayForecast" class="weather-info">
             <h2>Now</h2>
             <button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
                 'Fahrenheit' }}</button>
-
-            <p>Temperature: {{ displayTemperature }}°{{ tempUnit }}
-            </p>
+            <p>Temperature: {{ displayTemperature }}°{{ tempUnit }}</p>
             <p>Feels Like: {{ displayFeelsLike }}°{{ tempUnit }}</p>
             <p>Humidity: {{ weather.humidity }}%</p>
             <p>Cloud Cover: {{ weather.cloud }}%</p>
             <p>Condition: {{ apiCondition }}</p>
+            <button type="button" @click="showHourlyForecastView" class="forecast-btn">Get 5 Hour Forecast</button>
+            <button type="button" @click="showSevenDayForecastView" class="forecast-btn">Get 7-day Forecast</button>
         </div>
-        <div v-if="hourlyForecast.length > 0" class="hourly-forecast">
+        <!-- Hourly Forecast Section -->
+        <div v-if="showHourlyForecast" class="hourly-forecast">
             <h2>5 Hour Forecast</h2>
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
                 'Celsius' : 'Fahrenheit' }}</button>
@@ -29,9 +36,10 @@
                     Feels like: {{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{ hourlyTempUnit }}, Cloud:
                     {{ hour.cloud }}%, Humidity: {{ hour.humidity }}%, {{ hour.condition.text }}</p>
             </div>
+            <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
         </div>
-        <!-- 7-day Forecast -->
-        <div class="seven-day-forecast" v-if="sevenDayForecast.length > 0">
+        <!-- 7-day Forecast Section -->
+        <div v-if="showSevenDayForecast" class="seven-day-forecast">
             <h2>7-day Forecast</h2>
             <button @click="toggleSevenDayTempUnit" class="toggle-btn small-btn">
                 Switch to {{ sevenDayTempUnit === 'F' ? 'Celsius' : 'Fahrenheit' }}
@@ -44,12 +52,11 @@
                     <p>Min: {{ formatTemp(day.day.mintemp_f, day.day.mintemp_c) }}°{{ sevenDayTempUnit }}</p>
                 </div>
             </div>
+            <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
         </div>
-        <div v-if="matchedPrompt" class="matched-prompt">
-        <p>{{ matchedPrompt }}</p>
-    </div>
     </div>
 </template>
+
 
 <script>
 import weatherPrompts from '../../weather_prompts.json';
@@ -69,6 +76,9 @@ export default {
             sevenDayForecast: [],
             sevenDayTempUnit: 'F',
             hourlyTempUnit: 'F',
+            showHourlyForecast: false,
+            showSevenDayForecast: false,
+            matchedVibeClicked: false,
         };
     },
     computed: {
@@ -98,6 +108,9 @@ export default {
     methods: {
         async fetchWeatherData() {
             this.resetData();
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
 
             const apiKey = import.meta.env.VITE_API_KEY;
             try {
@@ -142,6 +155,7 @@ export default {
             const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
             let condition = this.apiCondition;
             const isDayTime = this.isDay === 1;
+            this.matchedVibeClicked = true; // Ensure this is set to true when the method is called
 
             // Iterating through each temperature range to find a match
             for (let tempRange in weatherPrompts) {
@@ -160,6 +174,7 @@ export default {
             // Fallback to custom logic or default prompt if no match found
             this.matchedPrompt = "Enjoy the weather, no matter the vibe!";
         },
+
         logout() {
             localStorage.removeItem('isAuthenticated');
             this.$router.push('/');
@@ -201,7 +216,26 @@ export default {
             this.matchedPrompt = null;
             this.apiCondition = '';
             this.hourlyForecast = [];
-        }
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
+        },
+        resetView() {
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
+        },
+        showHourlyForecastView() {
+            this.showHourlyForecast = true;
+            this.showSevenDayForecast = false;
+            this.matchedVibeClicked = false;
+        },
+
+        showSevenDayForecastView() {
+            this.showHourlyForecast = false;
+            this.showSevenDayForecast = true;
+            this.matchedVibeClicked = false;
+        },
     },
 };
 </script>
@@ -221,7 +255,7 @@ export default {
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
- 
+
 }
 
 .container {
@@ -362,4 +396,27 @@ export default {
     color: #FFFFFF;
 }
 
+.forecast-btn {
+    padding: 0.75rem 1rem;
+    /* Adjust padding if necessary */
+    border-radius: 6px;
+    /* Rounded corners */
+    font-size: 1rem;
+    /* Font size */
+    margin-right: 0.5rem;
+    /* Right margin for spacing */
+    border: none;
+    /* No border */
+    color: white;
+    /* White text */
+    background-color: #4267B2;
+    /* Background color */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+}
+
+.forecast-btn:hover {
+    background-color: #365899;
+    /* Darker shade on hover */
+}
 </style>
