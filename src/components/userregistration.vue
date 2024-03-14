@@ -142,22 +142,22 @@ button {
   padding: 0.75rem 1rem;
   margin: 0 5px;
   border: none;
-  border-bottom: 2px solid transparent; 
+  border-bottom: 2px solid transparent;
   cursor: pointer;
   font-size: 1rem;
-  color: #4267B2; 
+  color: #4267B2;
   background-color: transparent;
-  transition: color 0.3s, border-color 0.3s; 
+  transition: color 0.3s, border-color 0.3s;
 }
 
 button:hover {
-  color: #365899; 
-  border-bottom: 2px solid #365899; 
+  color: #365899;
+  border-bottom: 2px solid #365899;
 }
 
 .active {
-  border-bottom: 2px solid #4267B2; 
-  color: #4267B2; 
+  border-bottom: 2px solid #4267B2;
+  color: #4267B2;
 }
 
 form {
@@ -169,14 +169,14 @@ form {
 
 button[type="submit"] {
   margin-top: 10px;
-  background-color: #4267B2; 
-  color: white; 
+  background-color: #4267B2;
+  color: white;
   border-radius: 6px;
 }
 
 button[type="submit"]:hover {
-  background-color: #365899; 
-  transform: translateY(-2px); 
+  background-color: #365899;
+  transform: translateY(-2px);
 }
 
 input {
@@ -189,5 +189,3 @@ input {
   font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 </style>
-
-
