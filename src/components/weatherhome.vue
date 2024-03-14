@@ -21,26 +21,29 @@
             <h2>Now</h2>
             <button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
                 'Fahrenheit' }}</button>
-            <p>Temperature: {{ displayTemperature }}°{{ tempUnit }}</p>
-            <p>Feels Like: {{ displayFeelsLike }}°{{ tempUnit }}</p>
-            <p>Humidity: {{ weather.humidity }}%</p>
-            <p>Cloud Cover: {{ weather.cloud }}%</p>
-            <p>Condition: {{ apiCondition }}</p>
-            <button type="button" @click="showHourlyForecastView" class="forecast-btn">Get 5 Hour Forecast</button>
-            <button type="button" @click="showSevenDayForecastView" class="forecast-btn">Get 7-day Forecast</button>
+            <p><span class="descriptive">Temperature:</span> {{ displayTemperature }}°{{ tempUnit }}</p>
+            <p><span class="descriptive">Feels Like:</span> {{ displayFeelsLike }}°{{ tempUnit }}</p>
+            <p><span class="descriptive">Humidity:</span> {{ weather.humidity }}%</p>
+            <p><span class="descriptive">Cloud Cover:</span> {{ weather.cloud }}%</p>
+            <p><span class="descriptive">Condition:</span> {{ apiCondition }}</p>
+            <button type="button" @click="showHourlyForecastView" class="forecast-btn">Hourly Forecast</button>
+            <button type="button" @click="showSevenDayForecastView" class="forecast-btn">7-day Forecast</button>
         </div>
         <!-- Hourly Forecast Section -->
         <div v-if="showHourlyForecast" class="hourly-forecast">
             <div class="location-info">
                 <h3>{{ cityName }}, {{ regionName }}</h3>
             </div>
-            <h2>5 Hour Forecast</h2>
+            <h2>Hourly Forecast</h2>
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
                 'Celsius' : 'Fahrenheit' }}</button>
             <div class="hour" v-for="(hour, index) in next5HoursForecast" :key="index">
-                <p>{{ formatHour(hour.time) }}: {{ formatHourlyTemp(hour.temp_f, hour.temp_c) }}°{{ hourlyTempUnit }},
-                    Feels like: {{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{ hourlyTempUnit }}, Cloud:
-                    {{ hour.cloud }}%, Humidity: {{ hour.humidity }}%, {{ hour.condition.text }}</p>
+                <p><span class="descriptive">{{ formatHour(hour.time) }}:</span> {{ formatHourlyTemp(hour.temp_f,
+                hour.temp_c) }}°{{ hourlyTempUnit }},
+                    <strong>Feels like: </strong>{{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{
+                hourlyTempUnit }}, <strong>Cloud:</strong>
+                    {{ hour.cloud }}%, <strong>Humidity: </strong>{{ hour.humidity }}%, {{ hour.condition.text }}
+                </p>
             </div>
             <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
         </div>
@@ -55,10 +58,12 @@
             </button>
             <div class="forecast-container">
                 <div class="day" v-for="(day, index) in sevenDayForecast" :key="index">
-                    <p>{{ formatDay(day.date) }}</p>
+                    <p><span class="descriptive">{{ formatDay(day.date) }}</span></p>
                     <p>{{ day.day.condition.text }}</p>
-                    <p>Max: {{ formatTemp(day.day.maxtemp_f, day.day.maxtemp_c) }}°{{ sevenDayTempUnit }}</p>
-                    <p>Min: {{ formatTemp(day.day.mintemp_f, day.day.mintemp_c) }}°{{ sevenDayTempUnit }}</p>
+                    <p><strong>Max: </strong>{{ formatTemp(day.day.maxtemp_f, day.day.maxtemp_c) }}°{{ sevenDayTempUnit
+                        }}</p>
+                    <p><strong>Min: </strong>{{ formatTemp(day.day.mintemp_f, day.day.mintemp_c) }}°{{ sevenDayTempUnit
+                        }}</p>
                 </div>
             </div>
             <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
@@ -437,5 +442,124 @@ export default {
     margin-top: 0;
     font-size: 1.2rem;
     color: #333;
+}
+
+.weather-info p,
+.hourly-forecast p,
+.seven-day-forecast .day p {
+    font-weight: 500;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 0.8rem;
+}
+
+.descriptive {
+    font-weight: bold;
+    color: #4267B2;
+}
+
+/* Media Queries */
+@media (max-width: 600px) {
+    .container,
+    .weather-info,
+    .hourly-forecast,
+    .seven-day-forecast,
+    .matched-prompt {
+        margin: 10px;
+        padding: 15px;
+        width: calc(100% - 20px); 
+        box-sizing: border-box; 
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .weather-form {
+        width: 100%;
+    }
+
+    .city-input {
+        width: calc(100% - 20px);
+        margin-bottom: 10px;
+    }
+
+    .submit-btn,
+    .forecast-btn,
+    .toggle-btn,
+    .small-btn,
+    .logout-btn {
+        width: 100%;
+        margin: 5px 0; 
+    }
+
+    .forecast-container,
+    .hourly-forecast .hour,
+    .seven-day-forecast .day {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .location-info h3 {
+        font-size: 1.1rem; 
+    }
+
+    .weather-info h2,
+    .hourly-forecast h2,
+    .seven-day-forecast h2 {
+        font-size: 1.3rem;
+    }
+
+    .descriptive {
+        display: block; 
+        font-size: 0.9rem; 
+    }
+
+    .seven-day-forecast .forecast-container {
+        flex-direction: column;
+        gap: none;
+    }
+
+    .seven-day-forecast .day {
+        width: 100%; 
+        margin-right: 0;
+        box-sizing: border-box;
+    }
+
+    .seven-day-forecast,
+    .hourly-forecast,
+    .weather-info {
+        width: auto; 
+        margin: 0; 
+        padding: 1em;
+    }
+
+    .location-info h3,
+    .weather-info h2,
+    .seven-day-forecast h2,
+    .hourly-forecast h2 {
+        font-size: 1.1rem;
+    }
+
+    .descriptive {
+        display: block; 
+        font-weight: 600;
+    }
+
+    .toggle-btn,
+    .forecast-btn,
+    .logout-btn,
+    .small-btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+}
+
+    .submit-btn {
+        margin-top: -3px;
+    }
+
+    .logout-btn {
+        margin-bottom: 15px;
+    }
 }
 </style>
