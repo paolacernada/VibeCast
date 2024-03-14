@@ -23,6 +23,8 @@ export default {
   max-width: 653px; 
   margin: 2rem auto; 
   border-radius: 6px;
+  margin-top: 1%;
+  margin-bottom: 0%;
 }
 
 .main-header h1 {

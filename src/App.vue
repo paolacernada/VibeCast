@@ -33,11 +33,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 3%;
+
 }
 
 header {
-  line-height: 1.5;
+  line-height: 1.2;
 }
 
 header .wrapper {

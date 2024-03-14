@@ -117,20 +117,20 @@ export default {
             return `${sign}${hours}:${minutes}`;
         },
         next5HoursForecast() {
-        const locationTime = this.adjustToLocationTimezone(new Date()); // Adjust current time to location's timezone
-        let filteredForecast = this.hourlyForecast.filter(hour => {
-            const forecastTime = new Date(hour.time_epoch * 1000); // Forecast time in UTC
-            return forecastTime >= locationTime && forecastTime <= new Date(locationTime.getTime() + 5 * 60 * 60 * 1000);
-        });
+            const locationTime = this.adjustToLocationTimezone(new Date()); // Adjust current time to location's timezone
+            let filteredForecast = this.hourlyForecast.filter(hour => {
+                const forecastTime = new Date(hour.time_epoch * 1000); // Forecast time in UTC
+                return forecastTime >= locationTime && forecastTime <= new Date(locationTime.getTime() + 5 * 60 * 60 * 1000);
+            });
 
-        // Fallback: If filtered data is sparse, adjust the criteria or extend the window
-        if (filteredForecast.length < 5) {
-            filteredForecast = this.hourlyForecast.slice(0, 5); // Example fallback: simply take the first 5 hours
-        }
+            // Fallback: If filtered data is sparse, adjust the criteria or extend the window
+            if (filteredForecast.length < 5) {
+                filteredForecast = this.hourlyForecast.slice(0, 5); // Example fallback: simply take the first 5 hours
+            }
 
-        return filteredForecast.slice(0, 5); // Ensure no more than 5 hours are returned
+            return filteredForecast.slice(0, 5); // Ensure no more than 5 hours are returned
+        },
     },
-},
     methods: {
         async fetchWeatherData() {
             this.resetData();
@@ -187,18 +187,18 @@ export default {
             this.hourlyForecast = data.forecast.forecastday[forecastIndex].hour;
         },
         adjustToLocationTimezone(date) {
-        const userOffset = date.getTimezoneOffset() * 60000; // User's timezone offset in milliseconds
-        const locationOffset = this.getLocationTimezoneOffset() * 3600000; // Location's timezone offset in milliseconds
-        return new Date(date.getTime() + userOffset + locationOffset);
-    },
+            const userOffset = date.getTimezoneOffset() * 60000; // User's timezone offset in milliseconds
+            const locationOffset = this.getLocationTimezoneOffset() * 3600000; // Location's timezone offset in milliseconds
+            return new Date(date.getTime() + userOffset + locationOffset);
+        },
 
-    getLocationTimezoneOffset() {
-        console.log("getLocationTimezoneOffset called");
-        const date = new Date(new Date().toLocaleString("en-US", {timeZone: this.locationTimezone}));
-        const offset = -date.getTimezoneOffset() / 60; // Convert to hours
-        console.log("Offset:", offset);
-        return offset;
-    },
+        getLocationTimezoneOffset() {
+            console.log("getLocationTimezoneOffset called");
+            const date = new Date(new Date().toLocaleString("en-US", { timeZone: this.locationTimezone }));
+            const offset = -date.getTimezoneOffset() / 60; // Convert to hours
+            console.log("Offset:", offset);
+            return offset;
+        },
         convertToFahrenheit(celsius) {
             return Math.round(celsius * 9 / 5 + 32);
         },
@@ -345,7 +345,17 @@ export default {
             this.backgroundImage = null;
             document.body.style.backgroundImage = 'none';
         },
-},
+        logout() {
+            document.body.style.backgroundImage = 'none';
+
+            localStorage.removeItem('isAuthenticated');
+
+            this.$router.push('/');
+        },
+        beforeDestroy() {
+            document.body.style.backgroundImage = 'none';
+        }
+    },
 };
 </script>
 
