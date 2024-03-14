@@ -247,7 +247,7 @@ export default {
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    width: auto;
+    width: fit-content;
     height: auto;
 }
 
@@ -260,12 +260,12 @@ export default {
 
 .container {
     max-width: 800px;
+    width: 100%;
     margin: auto;
     padding: 1rem;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: left;
     background-color: #F0F2F5;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -335,7 +335,8 @@ export default {
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    height: 250px;
+    height: auto;
+    width: fit-content;
 }
 
 .seven-day-forecast .day {
@@ -343,18 +344,17 @@ export default {
 }
 
 .hourly-forecast {
-    /* flex-grow: 2; */
     margin-top: 2%;
     padding: 0.8rem;
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    height: 250px;
-    width: auto;
+    height: fit-content;
+    width: fit-content;
 }
 
 .matched-prompt {
-    width: 100%;
+    width: auto;
     padding: 1rem;
     border-radius: 10px;
     background-color: #FFFFFF;
@@ -375,7 +375,6 @@ export default {
 }
 
 .seven-day-forecast .day p {
-    line-height: 1.5;
     margin-top: 0.6rem;
 }
 
@@ -398,25 +397,16 @@ export default {
 
 .forecast-btn {
     padding: 0.75rem 1rem;
-    /* Adjust padding if necessary */
     border-radius: 6px;
-    /* Rounded corners */
     font-size: 1rem;
-    /* Font size */
-    margin-right: 0.5rem;
-    /* Right margin for spacing */
+    margin-right: 1.5rem;
     border: none;
-    /* No border */
     color: white;
-    /* White text */
     background-color: #4267B2;
-    /* Background color */
     cursor: pointer;
-    /* Pointer cursor on hover */
 }
 
 .forecast-btn:hover {
     background-color: #365899;
-    /* Darker shade on hover */
 }
 </style>
