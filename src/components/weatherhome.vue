@@ -20,7 +20,7 @@
             </div>
             <h2>Now</h2>
             <button @click="toggleTempUnit" class="toggle-btn small-btn">Switch to {{ tempUnit === 'F' ? 'Celsius' :
-                'Fahrenheit' }}</button>
+        'Fahrenheit' }}</button>
             <p><span class="descriptive">Temperature:</span> {{ displayTemperature }}°{{ tempUnit }}</p>
             <p><span class="descriptive">Feels Like:</span> {{ displayFeelsLike }}°{{ tempUnit }}</p>
             <p><span class="descriptive">Humidity:</span> {{ weather.humidity }}%</p>
@@ -36,12 +36,12 @@
             </div>
             <h2>Hourly Forecast</h2>
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
-                'Celsius' : 'Fahrenheit' }}</button>
+        'Celsius' : 'Fahrenheit' }}</button>
             <div class="hour" v-for="(hour, index) in next5HoursForecast" :key="index">
                 <p><span class="descriptive">{{ formatHour(hour.time) }}:</span> {{ formatHourlyTemp(hour.temp_f,
-                hour.temp_c) }}°{{ hourlyTempUnit }},
+        hour.temp_c) }}°{{ hourlyTempUnit }},
                     <strong>Feels like: </strong>{{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{
-                hourlyTempUnit }}, <strong>Cloud:</strong>
+        hourlyTempUnit }}, <strong>Cloud:</strong>
                     {{ hour.cloud }}%, <strong>Humidity: </strong>{{ hour.humidity }}%, {{ hour.condition.text }}
                 </p>
             </div>
@@ -94,6 +94,7 @@ export default {
             matchedVibeClicked: false,
             cityName: '',
             regionName: '',
+            backgroundImage: null,
         };
     },
     computed: {
@@ -127,7 +128,7 @@ export default {
                 // If it's the next day, include any hour since it's within the next 5-hour window
                 return (isToday && hourOfForecast >= currentHour) || isNextDay;
             }).slice(0, 5); // Limit to the next 5 hours
-        }
+        },
     },
     methods: {
         async fetchWeatherData() {
@@ -203,31 +204,23 @@ export default {
             return Math.round(celsius * 9 / 5 + 32);
         },
         matchVibe() {
-            if (!this.weather) return;
+  if (!this.weather) return;
 
-            const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
-            let condition = this.apiCondition;
-            const isDayTime = this.isDay === 1;
-            this.matchedVibeClicked = true;
+  let condition = this.normalizeConditionText(this.apiCondition);
+  this.matchedVibeClicked = true;
 
-            // Iterating through each temperature range to find a match
-            for (let tempRange in weatherPrompts) {
-                const [min, max] = tempRange.split('-').map(Number);
-                if (temperatureFahrenheit >= min && temperatureFahrenheit <= max) {
-                    // Accessing the daytime or nighttime prompts within the matched temperature range
-                    const prompts = isDayTime ? weatherPrompts[tempRange].daytime : weatherPrompts[tempRange].nighttime;
+  // Use the condition directly to get the background image
+  this.backgroundImage = this.getBackgroundImage(condition);
+  if (this.backgroundImage) {
+    document.body.style.backgroundImage = `url('/backgrounds/${this.backgroundImage}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+  } else {
+    this.clearBackgroundImage();
+  }
 
-                    // If the API condition matches one of the conditions in the prompts, use it
-                    if (prompts[condition]) {
-                        this.matchedPrompt = prompts[condition];
-                        return;
-                    }
-                }
-            }
-            // Fallback to custom logic or default prompt if no match found
-            this.matchedPrompt = "Enjoy the weather, no matter the vibe!";
-        },
-
+  this.matchedPrompt = this.getMatchedPrompt(condition) || "Enjoy the weather, no matter the vibe!";
+},
         logout() {
             localStorage.removeItem('isAuthenticated');
             this.$router.push('/');
@@ -272,6 +265,8 @@ export default {
             this.showHourlyForecast = false;
             this.showSevenDayForecast = false;
             this.matchedVibeClicked = false;
+            this.backgroundImage = null;
+            document.body.style.backgroundImage = 'none';
         },
         resetView() {
             this.showHourlyForecast = false;
@@ -282,13 +277,55 @@ export default {
             this.showHourlyForecast = true;
             this.showSevenDayForecast = false;
             this.matchedVibeClicked = false;
+            document.body.style.backgroundImage = 'none';
         },
-
         showSevenDayForecastView() {
             this.showHourlyForecast = false;
             this.showSevenDayForecast = true;
             this.matchedVibeClicked = false;
+            document.body.style.backgroundImage = 'none';
         },
+        getBackgroundImage(condition) {
+            const conditionMap = {
+                "Light rain shower": "light-rain-shower.png",
+                "Thundery outbreaks possible": "thundery-outbreaks-possible.png",
+                "Heavy snow": "heavy-snow.png",
+                "Moderate snow": "moderate-snow.png",
+                "Patchy light rain": "patchy-light-rain.png",
+                "Light rain": "light-rain.png",
+                "Blizzard": "blizzard.png",
+                "Fog": "fog.png",
+                "Overcast": "overcast.png",
+                "Partly cloudy": "partly-cloudy.png",
+                "Sunny": "sunny.png",
+                "Clear": "clear.png"
+            };
+
+            return conditionMap[condition] || null;
+        },
+        getMatchedPrompt(condition) {
+  const temperatureFahrenheit = this.convertToFahrenheit(this.weather.temp_c);
+  const tempRanges = Object.keys(weatherPrompts);
+
+  for (let range of tempRanges) {
+    const [min, max] = range.split('-').map(Number);
+    if (temperatureFahrenheit >= min && temperatureFahrenheit <= max) {
+      const { daytime, nighttime } = weatherPrompts[range];
+      return daytime[condition] || nighttime[condition];
+    }
+  }
+  return null;
+},
+        normalizeConditionText(conditionText) {
+            return conditionText.trim().replace(/\s+/g, ' ');
+        },
+        beforeDestroy() {
+            document.body.style.backgroundImage = 'none';
+        },
+        clearBackgroundImage() {
+  this.backgroundImage = null;
+  document.body.style.backgroundImage = 'none';
+},
     },
 };
 </script>
@@ -324,6 +361,8 @@ export default {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     color: #1C1E21;
+    background-size: cover;
+    background-position: center;
 }
 
 .header {
