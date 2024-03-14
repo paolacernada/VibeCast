@@ -43,8 +43,9 @@
                 <p><span class="descriptive">{{ formatHour(hour.time) }}:</span> {{ formatHourlyTemp(hour.temp_f,
                 hour.temp_c) }}°{{ hourlyTempUnit }},
                     <strong>Feels like: </strong>{{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{
-                hourlyTempUnit }}, <strong>Cloud:</strong>
-                    {{ hour.cloud }}%, <strong>Humidity: </strong>{{ hour.humidity }}%, {{ hour.condition.text }}
+                hourlyTempUnit }},
+                    <strong>Cloud:</strong> {{ hour.cloud }}%, <strong>Humidity: </strong>{{ hour.humidity }}%, {{
+                hour.condition.text }}
                 </p>
             </div>
             <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
@@ -97,6 +98,7 @@ export default {
             cityName: '',
             regionName: '',
             backgroundImage: null,
+            locationTimezone: '',
         };
     },
     computed: {
@@ -115,23 +117,20 @@ export default {
             return `${sign}${hours}:${minutes}`;
         },
         next5HoursForecast() {
-            const currentHour = new Date().getHours();
-            const currentDay = new Date().getDate();
-            return this.hourlyForecast.filter(hour => {
-                const hourDate = new Date(hour.time);
-                const hourOfForecast = hourDate.getHours();
-                const dayOfForecast = hourDate.getDate();
+        const locationTime = this.adjustToLocationTimezone(new Date()); // Adjust current time to location's timezone
+        let filteredForecast = this.hourlyForecast.filter(hour => {
+            const forecastTime = new Date(hour.time_epoch * 1000); // Forecast time in UTC
+            return forecastTime >= locationTime && forecastTime <= new Date(locationTime.getTime() + 5 * 60 * 60 * 1000);
+        });
 
-                // Check if the forecast hour is for the current or next day
-                const isToday = dayOfForecast === currentDay;
-                const isNextDay = dayOfForecast === currentDay + 1;
+        // Fallback: If filtered data is sparse, adjust the criteria or extend the window
+        if (filteredForecast.length < 5) {
+            filteredForecast = this.hourlyForecast.slice(0, 5); // Example fallback: simply take the first 5 hours
+        }
 
-                // If it's today, return hours greater than the current hour
-                // If it's the next day, include any hour since it's within the next 5-hour window
-                return (isToday && hourOfForecast >= currentHour) || isNextDay;
-            }).slice(0, 5); // Limit to the next 5 hours
-        },
+        return filteredForecast.slice(0, 5); // Ensure no more than 5 hours are returned
     },
+},
     methods: {
         async fetchWeatherData() {
             this.resetData();
@@ -158,6 +157,7 @@ export default {
             this.apiCondition = data.current.condition.text;
             this.cityName = data.location.name;
             this.regionName = data.location.region;
+            this.locationTimezone = data.location.tz_id;
         },
         async fetchSevenDayForecast(apiKey) {
             const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
@@ -186,22 +186,19 @@ export default {
             const forecastIndex = currentHour > 18 ? 1 : 0; // Use today's forecast if before 6 PM, otherwise use tomorrow's
             this.hourlyForecast = data.forecast.forecastday[forecastIndex].hour;
         },
-        next5HoursForecast() {
-            const currentHour = new Date().getHours();
-            let filteredHours;
+        adjustToLocationTimezone(date) {
+        const userOffset = date.getTimezoneOffset() * 60000; // User's timezone offset in milliseconds
+        const locationOffset = this.getLocationTimezoneOffset() * 3600000; // Location's timezone offset in milliseconds
+        return new Date(date.getTime() + userOffset + locationOffset);
+    },
 
-            if (currentHour > 18) { // If fetching for the next day, include all available hours
-                filteredHours = this.hourlyForecast;
-            } else { // Otherwise, filter for the next 5 hours
-                filteredHours = this.hourlyForecast.filter(hour => {
-                    const hourDate = new Date(hour.time);
-                    const hourOfForecast = hourDate.getHours();
-                    return hourOfForecast > currentHour && hourOfForecast <= currentHour + 5;
-                });
-            }
-
-            return filteredHours;
-        },
+    getLocationTimezoneOffset() {
+        console.log("getLocationTimezoneOffset called");
+        const date = new Date(new Date().toLocaleString("en-US", {timeZone: this.locationTimezone}));
+        const offset = -date.getTimezoneOffset() / 60; // Convert to hours
+        console.log("Offset:", offset);
+        return offset;
+    },
         convertToFahrenheit(celsius) {
             return Math.round(celsius * 9 / 5 + 32);
         },
@@ -348,7 +345,7 @@ export default {
             this.backgroundImage = null;
             document.body.style.backgroundImage = 'none';
         },
-    },
+},
 };
 </script>
 
