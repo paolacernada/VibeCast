@@ -10,6 +10,9 @@
                 v-if="weather && !showHourlyForecast && !showSevenDayForecast">Match My Vibe</button>
             <button @click="logout" class="logout-btn">Logout</button>
         </div>
+        <div v-if="errorMessage" class="error-message">
+            {{ errorMessage }}
+        </div>
         <!-- Matched Prompt Section -->
         <transition name="fade">
             <div v-if="matchedPrompt && matchedVibeClicked" class="matched-prompt">
@@ -104,6 +107,7 @@ export default {
             backgroundImage: null,
             locationTimezone: '',
             nextEightHoursData: [],
+            errorMessage: '',
         };
     },
     mounted() {
@@ -143,11 +147,11 @@ export default {
     },
     methods: {
         async fetchWeatherData() {
+            this.errorMessage = '';
             this.resetData();
             this.showHourlyForecast = false;
             this.showSevenDayForecast = false;
             this.matchedVibeClicked = false;
-
 
             const apiKey = import.meta.env.VITE_API_KEY;
             try {
@@ -161,19 +165,25 @@ export default {
         },
         async fetchCurrentWeather(apiKey) {
             const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.zipCode}&tz=${this.userTimezone}`;
-            const response = await fetch(url, { method: 'GET' });
-            if (!response.ok) throw new Error('Failed to fetch current weather data');
-            const data = await response.json();
-            this.weather = data.current;
-            this.isDay = data.current.is_day;
-            this.apiCondition = data.current.condition.text;
-            this.cityName = data.location.name;
-            this.regionName = data.location.region;
-            this.locationTimezone = data.location.tz_id;
-            console.log(`Updated locationTimezone: ${this.locationTimezone}`);
-            // future note
-            // remove line below to only show image on Match My Vibe
-            this.getBackground();
+            try {
+                const response = await fetch(url, { method: 'GET' });
+                if (!response.ok) {
+                    throw new Error('No matching location found.');
+                }
+                const data = await response.json();
+                this.weather = data.current;
+                this.isDay = data.current.is_day;
+                this.apiCondition = data.current.condition.text;
+                this.cityName = data.location.name;
+                this.regionName = data.location.region;
+                this.locationTimezone = data.location.tz_id;
+                console.log(`Updated locationTimezone: ${this.locationTimezone}`);
+                // future note
+                // remove line below to only show image on Match My Vibe
+                this.getBackground();
+            } catch (error) {
+                this.errorMessage = error.message;
+            }
         },
         async fetchSevenDayForecast(apiKey) {
             const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
@@ -181,14 +191,14 @@ export default {
             if (!response.ok) throw new Error('Failed to fetch 7-day forecast data');
             const data = await response.json();
 
-            // Skip the first day's data (today) and keep the next 7 days
+            // Skip the first day's data and keep the next 7 days
             this.sevenDayForecast = data.forecast.forecastday.slice(1); // Start from index 1 to exclude today
         },
         async fetchForecast(apiKey) {
             const currentHour = new Date().getHours();
             let daysToFetch = 1;
 
-            // If it's late in the day, fetch the forecast for an additional day
+            // If it's late in the day, fetch the forecast for one more day
             if (currentHour > 18) {
                 daysToFetch = 2; // Fetch forecast for the next 2 days to include the next day's hourly forecast
             }
@@ -208,50 +218,48 @@ export default {
             return dateInLocationTimeZone.toDate();
         },
         getNextEightHoursForecast(forecastData) {
-    const nowInLocationTimeZone = moment.tz(this.locationTimezone);
-    console.log("Now in Location Timezone:", nowInLocationTimeZone.toString());
-    let startHour = nowInLocationTimeZone.hours();
-    console.log("Start Hour:", startHour);
+            const nowInLocationTimeZone = moment.tz(this.locationTimezone);
+            console.log("Now in Location Timezone:", nowInLocationTimeZone.toString());
+            let startHour = nowInLocationTimeZone.hours();
+            console.log("Start Hour:", startHour);
 
-    if (nowInLocationTimeZone.minutes() > 0) {
-        startHour += 1;
-    }
+            if (nowInLocationTimeZone.minutes() > 0) {
+                startHour += 1;
+            }
 
-    let hoursNeeded = 8;
-    const result = [];
+            let hoursNeeded = 8;
+            const result = [];
 
-    for (let i = 0; i < hoursNeeded; i++) {
-        const forecastHour = (startHour + i) % 24;
-        const isTomorrow = startHour + i >= 24;
+            for (let i = 0; i < hoursNeeded; i++) {
+                const forecastHour = (startHour + i) % 24;
+                const isTomorrow = startHour + i >= 24;
 
-        const dayForecast = forecastData[isTomorrow ? 1 : 0].hour;
-        const hourForecast = dayForecast.find(h => {
-            const hourDate = moment.tz(h.time, this.locationTimezone);
-            return hourDate.hours() === forecastHour;
-        });
+                const dayForecast = forecastData[isTomorrow ? 1 : 0].hour;
+                const hourForecast = dayForecast.find(h => {
+                    const hourDate = moment.tz(h.time, this.locationTimezone);
+                    return hourDate.hours() === forecastHour;
+                });
 
-        if (hourForecast) {
-            // Convert the time string to a Date object before passing to formatTime
-            const forecastDateTime = new Date(hourForecast.time);
+                if (hourForecast) {
+                    const forecastDateTime = new Date(hourForecast.time);
 
-            result.push({
-                time: this.formatTime(forecastDateTime), // Use the Date object here
-                temp_f: hourForecast.temp_f,
-                temp_c: hourForecast.temp_c,
-                feelsLike_f: hourForecast.feelslike_f,
-                feelsLike_c: hourForecast.feelslike_c,
-                cloud: `${hourForecast.cloud}%`,
-                humidity: `${hourForecast.humidity}%`,
-                condition: hourForecast.condition.text.trim()
-            });
-        } else {
-            console.log(`No Hour Forecast Found for hour: ${forecastHour}`);
-        }
-    }
-    console.log(`Resulting Next Eight Hours Data:`, result);
-    return result;
-},
-
+                    result.push({
+                        time: this.formatTime(forecastDateTime),
+                        temp_f: hourForecast.temp_f,
+                        temp_c: hourForecast.temp_c,
+                        feelsLike_f: hourForecast.feelslike_f,
+                        feelsLike_c: hourForecast.feelslike_c,
+                        cloud: `${hourForecast.cloud}%`,
+                        humidity: `${hourForecast.humidity}%`,
+                        condition: hourForecast.condition.text.trim()
+                    });
+                } else {
+                    console.log(`No Hour Forecast Found for hour: ${forecastHour}`);
+                }
+            }
+            console.log(`Resulting Next Eight Hours Data:`, result);
+            return result;
+        },
         convertToFahrenheit(celsius) {
             return Math.round(celsius * 9 / 5 + 32);
         },
@@ -260,7 +268,7 @@ export default {
 
             let condition = this.normalizeConditionText(this.apiCondition);
             this.matchedVibeClicked = true;
-            // Only call getBackground() here for "Match My Vibe"
+            // ***Only call getBackground() here for "Match My Vibe"*** PC Desired Behavior***
             this.getBackground();
 
             this.matchedPrompt = this.getMatchedPrompt(condition) || "Sunshine or Rain, Our Spirits Remain Unchained!";
@@ -283,7 +291,7 @@ export default {
             let hours = date.getHours();
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
+            hours = hours ? hours : 12; // the hour '0' is '12'
             const minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
             return `${hours}:${minutes} ${ampm}`;
         },
@@ -294,7 +302,6 @@ export default {
             return this.hourlyTempUnit === 'F' ? tempF : tempC;
         },
         formatDay(dateString) {
-            // Create a Date object using the dateString and the user's time zone
             const date = new Date(dateString + 'T00:00:00' + this.userTimezoneOffset);
 
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -306,7 +313,7 @@ export default {
             let minutes = date.getMinutes();
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
-            hours = hours || 12; // the hour '0' should be '12'
+            hours = hours || 12; // the hour '0' is '12'
             minutes = minutes < 10 ? '0' + minutes : minutes;
             const strTime = hours + ':' + minutes + ' ' + ampm;
             return strTime;
@@ -386,7 +393,6 @@ export default {
                 "Moderate or heavy rain shower": "heavy-rain.png",
                 "Torrential rain shower": "heavy-rain.png",
             };
-
             return conditionMap[condition] || null;
         },
         getMatchedPrompt(condition) {
@@ -704,6 +710,18 @@ export default {
 .fade-leave-active {
     transition: opacity 0.15s ease, transform 0.15s ease;
 }
+
+.error-message {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 0.25rem;
+    text-align: center;
+    width: 100%;
+}
+
 
 body {
     background-size: cover;
