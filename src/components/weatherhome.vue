@@ -41,8 +41,12 @@
                 <h3>{{ cityName }}, {{ regionName }}</h3>
             </div>
             <h2>Hourly Forecast</h2>
-            <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
-                'Celsius' : 'Fahrenheit' }}</button>
+            <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{
+                hourlyTempUnit === 'F' ?
+                    'Celsius' : 'Fahrenheit' }}</button>
+            <div v-if="forecastErrorMessage" class="error-message">
+                {{ forecastErrorMessage }}
+            </div>
             <div class="hour" v-for="(hour, index) in nextEightHoursData" :key="index">
                 <p>
                     <span class="descriptive">{{ hour.time }}:</span>
@@ -108,6 +112,7 @@ export default {
             locationTimezone: '',
             nextEightHoursData: [],
             errorMessage: '',
+            forecastErrorMessage: '',
         };
     },
     mounted() {
@@ -219,12 +224,10 @@ export default {
         },
         getNextEightHoursForecast(forecastData) {
             const nowInLocationTimeZone = moment.tz(this.locationTimezone);
-            console.log("Now in Location Timezone:", nowInLocationTimeZone.toString());
             let startHour = nowInLocationTimeZone.hours();
-            console.log("Start Hour:", startHour);
 
             if (nowInLocationTimeZone.minutes() > 0) {
-                startHour += 1;
+                startHour += 1; // Advance to the next hour if current minutes are not 0
             }
 
             let hoursNeeded = 8;
@@ -234,7 +237,13 @@ export default {
                 const forecastHour = (startHour + i) % 24;
                 const isTomorrow = startHour + i >= 24;
 
-                const dayForecast = forecastData[isTomorrow ? 1 : 0].hour;
+                if (isTomorrow && forecastData.length < 2) {
+                    this.forecastErrorMessage = "Hourly Forecast data for tomorrow is not available.";
+                    break; // Exit the loop if forecast data for the next day is not available
+                }
+
+                const dayIndex = isTomorrow ? 1 : 0;
+                const dayForecast = forecastData[dayIndex].hour;
                 const hourForecast = dayForecast.find(h => {
                     const hourDate = moment.tz(h.time, this.locationTimezone);
                     return hourDate.hours() === forecastHour;
@@ -253,11 +262,8 @@ export default {
                         humidity: `${hourForecast.humidity}%`,
                         condition: hourForecast.condition.text.trim()
                     });
-                } else {
-                    console.log(`No Hour Forecast Found for hour: ${forecastHour}`);
                 }
             }
-            console.log(`Resulting Next Eight Hours Data:`, result);
             return result;
         },
         convertToFahrenheit(celsius) {
@@ -272,10 +278,6 @@ export default {
             this.getBackground();
 
             this.matchedPrompt = this.getMatchedPrompt(condition) || "Sunshine or Rain, Our Spirits Remain Unchained!";
-        },
-        logout() {
-            localStorage.removeItem('isAuthenticated');
-            this.$router.push('/');
         },
         toggleTempUnit() {
             this.tempUnit = this.tempUnit === 'F' ? 'C' : 'F';
@@ -719,9 +721,8 @@ export default {
     border: 1px solid #f5c6cb;
     border-radius: 0.25rem;
     text-align: center;
-    width: 100%;
+    width: fit-content;
 }
-
 
 body {
     background-size: cover;
