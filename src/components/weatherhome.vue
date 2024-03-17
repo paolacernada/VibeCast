@@ -40,10 +40,12 @@
             <h2>Hourly Forecast</h2>
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
                 'Celsius' : 'Fahrenheit' }}</button>
-            <div class="hour" v-for="(hour, index) in nextFiveHoursData" :key="index">
+            <div class="hour" v-for="(hour, index) in nextEightHoursData" :key="index">
                 <p>
-                    <span class="descriptive">{{ hour.time }}:</span> {{ hour.temp }},
-                    <strong>Feels like:</strong> {{ hour.feelsLike }},
+                    <span class="descriptive">{{ hour.time }}:</span>
+                    {{ formatHourlyTemp(hour.temp_f, hour.temp_c) }}°{{ hourlyTempUnit }},
+                    <strong>Feels like:</strong> {{ formatHourlyTemp(hour.feelsLike_f, hour.feelsLike_c) }}°{{
+                hourlyTempUnit }},
                     <strong>Cloud:</strong> {{ hour.cloud }}, <strong>Humidity:</strong> {{ hour.humidity }},
                     {{ hour.condition }}
                 </p>
@@ -87,7 +89,7 @@ export default {
             weather: null,
             matchedPrompt: null,
             isDay: null,
-            userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Captures the user's current timezone
+            userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Capture the user's current timezone
             apiCondition: '',
             tempUnit: 'F',
             hourlyForecast: [],
@@ -101,11 +103,27 @@ export default {
             regionName: '',
             backgroundImage: null,
             locationTimezone: '',
-            nextFiveHoursData: [],
+            nextEightHoursData: [],
         };
     },
     mounted() {
-        this.promptForCurrentLocation();
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    this.getZipCode(latitude, longitude);
+                },
+                (error) => {
+                    console.error("Error getting current location via Geolocation:", error);
+                    // Fallback to IP-based location if Geolocation fails
+                    this.fetchLocationFromIP();
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser, falling back to IP-based location.");
+            // Fallback to IP-based location if Geolocation is not supported
+            this.fetchLocationFromIP();
+        }
     },
     computed: {
         displayTemperature() {
@@ -152,6 +170,7 @@ export default {
             this.cityName = data.location.name;
             this.regionName = data.location.region;
             this.locationTimezone = data.location.tz_id;
+            console.log(`Updated locationTimezone: ${this.locationTimezone}`);
             // future note
             // remove line below to only show image on Match My Vibe
             this.getBackground();
@@ -164,11 +183,10 @@ export default {
 
             // Skip the first day's data (today) and keep the next 7 days
             this.sevenDayForecast = data.forecast.forecastday.slice(1); // Start from index 1 to exclude today
-
         },
         async fetchForecast(apiKey) {
             const currentHour = new Date().getHours();
-            let daysToFetch = 1; // Default to fetching 1 day of forecast
+            let daysToFetch = 1;
 
             // If it's late in the day, fetch the forecast for an additional day
             if (currentHour > 18) {
@@ -179,51 +197,61 @@ export default {
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch forecast data');
             const data = await response.json();
+            console.log("Forecast API Response:", data);
 
             if (data && data.forecast && data.forecast.forecastday) {
-                this.nextFiveHoursData = this.getNextFiveHoursForecast(data.forecast.forecastday);
+                this.nextEightHoursData = this.getNextEightHoursForecast(data.forecast.forecastday);
             }
         },
-        getNextFiveHoursForecast(forecastData) {
-            const now = new Date();
-            const currentHour = now.getHours();
-            let hoursNeeded = 8;
-            const result = [];
-
-            for (let i = 0; i < hoursNeeded; i++) {
-                const forecastHour = (currentHour + i) % 24;
-                const isTomorrow = currentHour + i >= 24;
-
-                const dayForecast = forecastData[isTomorrow ? 1 : 0].hour;
-                const hourForecast = dayForecast.find(h => new Date(h.time).getHours() === forecastHour);
-
-                if (hourForecast) {
-                    result.push({
-                        time: this.formatTime(hourForecast.time),
-                        temp: `${hourForecast.temp_f}°F`,
-                        feelsLike: `${hourForecast.feelslike_f}°F`,
-                        cloud: `${hourForecast.cloud}%`,
-                        humidity: `${hourForecast.humidity}%`,
-                        condition: hourForecast.condition.text.trim()
-                    });
-                }
-            }
-
-            return result;
+        convertToLocationTimeZone(dateStr) {
+            const dateInLocationTimeZone = moment(dateStr).tz(this.locationTimezone);
+            return dateInLocationTimeZone.toDate();
         },
-        adjustToLocationTimezone(date) {
-            const userOffset = date.getTimezoneOffset() * 60000; // User's timezone offset in milliseconds
-            const locationOffset = this.getLocationTimezoneOffset() * 3600000; // Location's timezone offset in milliseconds
-            return new Date(date.getTime() + userOffset + locationOffset);
-        },
+        getNextEightHoursForecast(forecastData) {
+    const nowInLocationTimeZone = moment.tz(this.locationTimezone);
+    console.log("Now in Location Timezone:", nowInLocationTimeZone.toString());
+    let startHour = nowInLocationTimeZone.hours();
+    console.log("Start Hour:", startHour);
 
-        getLocationTimezoneOffset() {
-            console.log("getLocationTimezoneOffset called");
-            const date = new Date(new Date().toLocaleString("en-US", { timeZone: this.locationTimezone }));
-            const offset = -date.getTimezoneOffset() / 60; // Convert to hours
-            console.log("Offset:", offset);
-            return offset;
-        },
+    if (nowInLocationTimeZone.minutes() > 0) {
+        startHour += 1;
+    }
+
+    let hoursNeeded = 8;
+    const result = [];
+
+    for (let i = 0; i < hoursNeeded; i++) {
+        const forecastHour = (startHour + i) % 24;
+        const isTomorrow = startHour + i >= 24;
+
+        const dayForecast = forecastData[isTomorrow ? 1 : 0].hour;
+        const hourForecast = dayForecast.find(h => {
+            const hourDate = moment.tz(h.time, this.locationTimezone);
+            return hourDate.hours() === forecastHour;
+        });
+
+        if (hourForecast) {
+            // Convert the time string to a Date object before passing to formatTime
+            const forecastDateTime = new Date(hourForecast.time);
+
+            result.push({
+                time: this.formatTime(forecastDateTime), // Use the Date object here
+                temp_f: hourForecast.temp_f,
+                temp_c: hourForecast.temp_c,
+                feelsLike_f: hourForecast.feelslike_f,
+                feelsLike_c: hourForecast.feelslike_c,
+                cloud: `${hourForecast.cloud}%`,
+                humidity: `${hourForecast.humidity}%`,
+                condition: hourForecast.condition.text.trim()
+            });
+        } else {
+            console.log(`No Hour Forecast Found for hour: ${forecastHour}`);
+        }
+    }
+    console.log(`Resulting Next Eight Hours Data:`, result);
+    return result;
+},
+
         convertToFahrenheit(celsius) {
             return Math.round(celsius * 9 / 5 + 32);
         },
@@ -273,14 +301,14 @@ export default {
             const day = String(date.getDate()).padStart(2, '0');
             return `${month}/${day}`;
         },
-        formatTime(dateTimeString) {
-            const date = new Date(dateTimeString);
+        formatTime(date) {
             let hours = date.getHours();
-            const minutes = date.getMinutes();
+            let minutes = date.getMinutes();
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
-            hours = hours ? hours : 12;
-            const strTime = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ' ' + ampm;
+            hours = hours || 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const strTime = hours + ':' + minutes + ' ' + ampm;
             return strTime;
         },
         resetData() {
@@ -395,7 +423,7 @@ export default {
         clearZipCode() {
             this.zipCode = '';
         },
-        promptForCurrentLocation() {
+        async promptForCurrentLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -404,10 +432,32 @@ export default {
                     },
                     (error) => {
                         console.error("Error getting current location:", error);
+                        // Fallback to IP-based location
+                        this.fetchLocationFromIP();
                     }
                 );
             } else {
                 console.error("Geolocation is not supported by this browser.");
+                // Fallback to IP-based location if geolocation is not supported
+                this.fetchLocationFromIP();
+            }
+        },
+        async fetchLocationFromIP() {
+            const apiKey = import.meta.env.VITE_IPAPI_API_KEY;
+            const url = `https://ipapi.co/json/?access_key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch IP-based location');
+                const data = await response.json();
+
+                if (data.latitude && data.longitude) {
+                    this.getZipCode(data.latitude, data.longitude);
+                } else {
+                    console.error('Latitude and longitude not found in IPAPI response');
+                }
+            } catch (error) {
+                console.error('Error fetching location from IP:', error);
             }
         },
         async getZipCode(latitude, longitude) {
