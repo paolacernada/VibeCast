@@ -169,7 +169,7 @@ export default {
             }
         },
         async fetchCurrentWeather(apiKey) {
-            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.zipCode}&tz=${this.userTimezone}`;
+            const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${this.zipCode}&tz=${this.userTimezone}`;
             try {
                 const response = await fetch(url, { method: 'GET' });
                 if (!response.ok) {
@@ -191,7 +191,7 @@ export default {
             }
         },
         async fetchSevenDayForecast(apiKey) {
-            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
+            const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
             const response = await fetch(url);
             if (!response.ok) throw new Error('Failed to fetch 7-day forecast data');
             const data = await response.json();
@@ -208,7 +208,7 @@ export default {
                 daysToFetch = 2; // Fetch forecast for the next 2 days to include the next day's hourly forecast
             }
 
-            const url = `http://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=${daysToFetch}&aqi=no&alerts=no`;
+            const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=${daysToFetch}&aqi=no&alerts=no`;
             const response = await fetch(url, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch forecast data');
             const data = await response.json();
