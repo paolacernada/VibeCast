@@ -16,10 +16,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    console.log('Authenticated:', isAuthenticated); // Debugging line
 
     if (to.meta.requiresAuth && !isAuthenticated) {
-        console.log('Redirecting to login...'); // Debugging line
         next('/'); // Redirect to login if not authenticated
     } else {
         next(); // Proceed if authenticated or the route doesn't require auth
