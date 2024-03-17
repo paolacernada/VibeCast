@@ -29,7 +29,7 @@
             <p><span class="descriptive">Humidity:</span> {{ weather.humidity }}%</p>
             <p><span class="descriptive">Cloud Cover:</span> {{ weather.cloud }}%</p>
             <p><span class="descriptive">Condition:</span> {{ apiCondition }}</p>
-            <button type="button" @click="showHourlyForecastView" class="forecast-btn">Hourly Forecast</button>
+            <button type="button" @click="showHourlyForecastView" class="forecast-btn">8-Hour Forecast</button>
             <button type="button" @click="showSevenDayForecastView" class="forecast-btn">7-day Forecast</button>
         </div>
         <!-- Hourly Forecast Section -->
@@ -40,13 +40,12 @@
             <h2>Hourly Forecast</h2>
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{ hourlyTempUnit === 'F' ?
                 'Celsius' : 'Fahrenheit' }}</button>
-            <div class="hour" v-for="(hour, index) in next5HoursForecast" :key="index">
-                <p><span class="descriptive">{{ formatHour(hour.time) }}:</span> {{ formatHourlyTemp(hour.temp_f,
-                hour.temp_c) }}°{{ hourlyTempUnit }},
-                    <strong>Feels like: </strong>{{ formatHourlyTemp(hour.feelslike_f, hour.feelslike_c) }}°{{
-                hourlyTempUnit }},
-                    <strong>Cloud:</strong> {{ hour.cloud }}%, <strong>Humidity: </strong>{{ hour.humidity }}%, {{
-                hour.condition.text }}
+            <div class="hour" v-for="(hour, index) in nextFiveHoursData" :key="index">
+                <p>
+                    <span class="descriptive">{{ hour.time }}:</span> {{ hour.temp }},
+                    <strong>Feels like:</strong> {{ hour.feelsLike }},
+                    <strong>Cloud:</strong> {{ hour.cloud }}, <strong>Humidity:</strong> {{ hour.humidity }},
+                    {{ hour.condition }}
                 </p>
             </div>
             <button type="button" @click="resetView" class="forecast-btn">Back to Weather Info</button>
@@ -77,6 +76,8 @@
 
 <script>
 import weatherPrompts from '../../weather_prompts.json';
+import moment from 'moment';
+import 'moment-timezone';
 
 export default {
     name: 'weatherhome',
@@ -100,6 +101,7 @@ export default {
             regionName: '',
             backgroundImage: null,
             locationTimezone: '',
+            nextFiveHoursData: [],
         };
     },
     mounted() {
@@ -119,20 +121,6 @@ export default {
             const minutes = String(absOffset % 60).padStart(2, '0');
             const sign = offset > 0 ? '-' : '+';
             return `${sign}${hours}:${minutes}`;
-        },
-        next5HoursForecast() {
-            const locationTime = this.adjustToLocationTimezone(new Date()); // Adjust current time to location's timezone
-            let filteredForecast = this.hourlyForecast.filter(hour => {
-                const forecastTime = new Date(hour.time_epoch * 1000); // Forecast time in UTC
-                return forecastTime >= locationTime && forecastTime <= new Date(locationTime.getTime() + 5 * 60 * 60 * 1000);
-            });
-
-            // Fallback: If filtered data is sparse, adjust the criteria or extend the window
-            if (filteredForecast.length < 5) {
-                filteredForecast = this.hourlyForecast.slice(0, 5); // Example fallback: simply take the first 5 hours
-            }
-
-            return filteredForecast.slice(0, 5); // Ensure no more than 5 hours are returned
         },
     },
     methods: {
@@ -192,9 +180,36 @@ export default {
             if (!response.ok) throw new Error('Failed to fetch forecast data');
             const data = await response.json();
 
-            // Determine which day's forecast to use based on the current hour
-            const forecastIndex = currentHour > 18 ? 1 : 0; // Use today's forecast if before 6 PM, otherwise use tomorrow's
-            this.hourlyForecast = data.forecast.forecastday[forecastIndex].hour;
+            if (data && data.forecast && data.forecast.forecastday) {
+                this.nextFiveHoursData = this.getNextFiveHoursForecast(data.forecast.forecastday);
+            }
+        },
+        getNextFiveHoursForecast(forecastData) {
+            const now = new Date();
+            const currentHour = now.getHours();
+            let hoursNeeded = 8;
+            const result = [];
+
+            for (let i = 0; i < hoursNeeded; i++) {
+                const forecastHour = (currentHour + i) % 24;
+                const isTomorrow = currentHour + i >= 24;
+
+                const dayForecast = forecastData[isTomorrow ? 1 : 0].hour;
+                const hourForecast = dayForecast.find(h => new Date(h.time).getHours() === forecastHour);
+
+                if (hourForecast) {
+                    result.push({
+                        time: this.formatTime(hourForecast.time),
+                        temp: `${hourForecast.temp_f}°F`,
+                        feelsLike: `${hourForecast.feelslike_f}°F`,
+                        cloud: `${hourForecast.cloud}%`,
+                        humidity: `${hourForecast.humidity}%`,
+                        condition: hourForecast.condition.text.trim()
+                    });
+                }
+            }
+
+            return result;
         },
         adjustToLocationTimezone(date) {
             const userOffset = date.getTimezoneOffset() * 60000; // User's timezone offset in milliseconds
@@ -257,6 +272,16 @@ export default {
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
             return `${month}/${day}`;
+        },
+        formatTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const strTime = hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ' ' + ampm;
+            return strTime;
         },
         resetData() {
             this.weather = null;
@@ -324,6 +349,7 @@ export default {
                 "Freezing fog": "fog.png",
                 "Overcast": "overcast.png",
                 "Partly cloudy": "partly-cloudy.png",
+                "Partly Cloudy": "partly-cloudy.png",
                 "Sunny": "sunny.png",
                 "Clear": "clear.png",
                 "Cloudy": "cloudy.png",
