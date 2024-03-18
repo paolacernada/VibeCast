@@ -581,7 +581,7 @@ export default {
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    height: auto;
+
     width: fit-content;
 }
 
@@ -728,8 +728,9 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    min-height: 100vh;
+    min-height: 111vh;
     overflow: hidden;
+    background-attachment: fixed;
 }
 
 /* Media Queries */

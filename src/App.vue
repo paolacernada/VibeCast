@@ -1,14 +1,14 @@
 <template>
-  <MainHeader />
-  <div class="content">
-    <router-view></router-view>
+  <div class="app-wrapper">
+    <MainHeader />
+    <div class="content">
+      <div class="bg"><router-view></router-view></div>
+    </div>
   </div>
 </template>
 
-
 <script>
 import MainHeader from './components/mainheader.vue';
-
 
 export default {
   name: 'App',
@@ -36,6 +36,12 @@ export default {
   margin-top: 0.9%;
 }
 
+.bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 header {
   line-height: 1.2;
 }
@@ -46,12 +52,11 @@ header .wrapper {
   flex-wrap: wrap;
 }
 
-body {
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    overflow: hidden;
+.app-wrapper {
+  transform: scale(0.89);
+  transform-origin: top center;
+  min-height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
-
 </style>
