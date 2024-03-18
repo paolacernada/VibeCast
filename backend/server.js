@@ -5,16 +5,20 @@ const cors = require('cors');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
+require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 
 app.use(cors());
 app.use(express.json());
 
 // Connecting to MongoDB
-const MONGO_URI = "mongodb+srv://admin:admin@cluster0.yfvd9iw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+mongoose.connection.on('error', err => {
+  console.error('MongoDB connection error:', err);
+});
 
 app.post('/signup', async (req, res) => {
   try {

@@ -7,7 +7,7 @@
                 <button type="submit" class="submit-btn">Get Weather</button>
             </form>
             <button type="button" @click="matchVibe" class="forecast-btn"
-                v-if="weather && !showHourlyForecast && !showSevenDayForecast">Match My Vibe</button>
+                v-if="weather && !showHourlyForecast && !showSevenDayForecast">VibeSync</button>
             <button @click="logout" class="logout-btn">Logout</button>
         </div>
         <div v-if="errorMessage" class="error-message">
@@ -183,9 +183,6 @@ export default {
                 this.regionName = data.location.region;
                 this.locationTimezone = data.location.tz_id;
                 console.log(`Updated locationTimezone: ${this.locationTimezone}`);
-                // future note
-                // remove line below to only show image on Match My Vibe
-                this.getBackground();
             } catch (error) {
                 this.errorMessage = error.message;
             }
@@ -274,7 +271,6 @@ export default {
 
             let condition = this.normalizeConditionText(this.apiCondition);
             this.matchedVibeClicked = true;
-            // ***Only call getBackground() here for "Match My Vibe"*** PC Desired Behavior***
             this.getBackground();
 
             this.matchedPrompt = this.getMatchedPrompt(condition) || "Sunshine or Rain, Our Spirits Remain Unchained!";
@@ -335,7 +331,7 @@ export default {
             this.showHourlyForecast = false;
             this.showSevenDayForecast = false;
             this.matchedVibeClicked = false;
-            this.getBackground();
+            document.body.style.backgroundImage = 'none';
         },
         showHourlyForecastView() {
             this.showHourlyForecast = true;
