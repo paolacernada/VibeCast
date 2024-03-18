@@ -48,33 +48,34 @@ export default {
   },
   methods: {
     async signUp() {
-      try {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: this.name,
+        email: this.email,
+        password: this.password,
+        location: this.location,
+      }),
+    });
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: this.name,
-            email: this.email,
-            password: this.password,
-            location: this.location,
-          }),
-        });
+    if (response.ok) {
+      const responseData = await response.json();
+      alert(responseData.message); // Show the alert with the success message
+      this.setActiveSection('login'); // Change to login section after the alert is dismissed
+      this.clearForm(); // Optionally clear the form fields
+    } else {
+      throw new Error('Failed to sign up');
+    }
+  } catch (error) {
+    console.error('Error signing up:', error);
+    alert('Error signing up. Please try again.' + error);
+  }
+},
 
-        if (response.ok) {
-          const responseData = await response.json();
-          alert(responseData.message);
-          this.clearForm();
-        } else {
-          throw new Error('Failed to sign up');
-        }
-      } catch (error) {
-        console.error('Error signing up:', error);
-        alert('Error signing up. Please try again.' + error);
-      }
-    },
     async login() {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
