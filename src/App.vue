@@ -46,4 +46,12 @@ header .wrapper {
   flex-wrap: wrap;
 }
 
+body {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
 </style>
