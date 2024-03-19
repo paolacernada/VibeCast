@@ -21,8 +21,3 @@ body {
   background-repeat: no-repeat;
   overflow: auto;
 }
-
-#app {
-  display: block;
-  max-height: auto;
-}

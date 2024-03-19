@@ -532,17 +532,21 @@ export default {
 .weather-form {
     display: flex;
     gap: 0.5rem;
-    align-items: center;
+    align-items: stretch;
+    width: 100%;
 }
 
 .city-input,
 .submit-btn,
 .match-vibe-btn,
 .logout-btn {
-    padding: 0.75rem 1rem;
+    padding: 0.75rem;
     border-radius: 6px;
     font-size: 1rem;
     margin-right: 1.5rem;
+    border: none;
+    width: auto;
+    box-sizing: border-box;
 }
 
 .city-input {
@@ -556,10 +560,11 @@ export default {
     border: none;
     color: white;
     background-color: #4267B2;
+    cursor: pointer;
 }
 
 .logout-btn {
-    margin-left: auto;
+    /* margin-left: auto; */
     background-color: #6A5ACD;
 }
 
@@ -757,7 +762,6 @@ body {
         margin: 10px;
         padding: 10px;
         width: calc(100% - 20px);
-        box-sizing: border-box;
     }
 
     .weather-form {
@@ -845,6 +849,10 @@ body {
 
     .logout-btn {
         margin-bottom: 15px;
+    }
+
+    .header {
+        flex-direction: column;
     }
 }
 </style>
