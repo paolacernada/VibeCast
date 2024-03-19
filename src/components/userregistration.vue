@@ -46,34 +46,36 @@ export default {
   },
   methods: {
     async signUp() {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        location: this.location,
-      }),
-    });
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: this.name,
+            email: this.email,
+            password: this.password,
+            location: this.location,
+          }),
+        });
 
-    if (response.ok) {
-      const responseData = await response.json();
-      alert(responseData.message); // Show the alert with the success message
-      this.setActiveSection('login'); // Change to login section after the alert is dismissed
-      this.clearForm(); // Optionally clear the form fields
-    } else {
-      throw new Error('Failed to sign up');
-    }
-  } catch (error) {
-    console.error('Error signing up:', error);
-    alert('Error signing up. Please try again.' + error);
-  }
-},
-
+        if (response.ok) {
+          const responseData = await response.json();
+          alert("Hooray! You're all signed up. Let's dive into your weather vibe. 🎉");
+          this.setActiveSection('login'); // Change to login section after the alert is dismissed
+          this.clearForm(); // Clear the form after successful sign-up
+        } else if (response.status === 409) {
+          // User already exists
+          const responseData = await response.json();
+          alert("It seems you're already part of our vibe tribe! Why not log in and see what's new? 🕺💃");
+        } else {
+          throw new Error('Ah, something went a bit wonky there. Could we try that again?');
+        }
+      } catch (error) {
+        alert("Oops! Our sign-up mojo seems a bit off. Mind giving it another whirl? 🌀");
+      }
+    },
     async login() {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}login`, {
@@ -89,36 +91,27 @@ export default {
 
         if (response.ok) {
           const responseData = await response.json();
-          alert(responseData.message);
+          alert(`Welcome back! Ready to check the vibe? 🌤️`);
           localStorage.setItem('isAuthenticated', 'true');
           this.$router.push('/weather'); // Redirect to WeatherHome after login
-
-          if (responseData.message === 'User logged in successfully') {
-            this.$emit('login-success');
-            console.log('Emitted the message to the parent')
-          }
         } else {
-          throw new Error('Failed to Login');
+          const errorResponse = await response.json();
+          alert(errorResponse.message || "Oops! Something went wrong with your sign-in. Let's try that again, shall we?");
         }
       } catch (error) {
-        console.error('Error Logging in:', error);
-        alert('Error Logging in. Please try again.' + error);
+        alert('Oh no, we hit a snag! Could you give it another whirl? 🌀');
       }
     },
-
-
     clearForm() {
       this.name = '';
       this.email = '';
       this.password = '';
       this.location = '';
     },
-
     setActiveSection(section) {
       this.activeSection = section;
     }
   }
-
 };
 </script>
 
