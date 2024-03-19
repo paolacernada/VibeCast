@@ -45,9 +45,6 @@
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{
                 hourlyTempUnit === 'F' ?
                     'Celsius' : 'Fahrenheit' }}</button>
-            <div v-if="forecastErrorMessage" class="error-message-yellow">
-                {{ forecastErrorMessage }}
-            </div>
             <div class="hour" v-for="(hour, index) in nextEightHoursData" :key="index">
                 <p>
                     <span class="descriptive">{{ hour.time }}:</span>
@@ -113,7 +110,6 @@ export default {
             locationTimezone: '',
             nextEightHoursData: [],
             errorMessage: '',
-            forecastErrorMessage: '',
             geoLocationError: ''
         };
     },
@@ -124,10 +120,6 @@ export default {
                     const { latitude, longitude } = position.coords;
                     this.getZipCode(latitude, longitude);
                 },
-                (error) => {
-                    // Fallback to IP-based location if Geolocation fails
-                    this.fetchLocationFromIP();
-                }
             );
         } else {
             this.geoLocationError = "It seems your device is a bit shy and doesn't want to share its location. No worries, we have another trick up our sleeve.";
@@ -237,11 +229,6 @@ export default {
             for (let i = 0; i < hoursNeeded; i++) {
                 const forecastHour = (startHour + i) % 24;
                 const isTomorrow = startHour + i >= 24;
-
-                if (isTomorrow && forecastData.length < 2) {
-                    this.forecastErrorMessage = "We can't peek into tomorrow's 🕒 hourly forecast just yet. Check back later for updates!";
-                    break; // Exit the loop if forecast data for the next day is not available
-                }
 
                 const dayIndex = isTomorrow ? 1 : 0;
                 const dayForecast = forecastData[dayIndex].hour;
