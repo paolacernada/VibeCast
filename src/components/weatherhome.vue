@@ -739,13 +739,13 @@ body {
     background-attachment: fixed;
 }
 
+/* Media Queries */
 @media (min-width: 601px) {
         body {
             overflow: hidden; /* Only apply overflow hidden for larger screens */
         }
     }
 
-/* Media Queries */
 @media (max-width: 600px) {
 
     .container,
