@@ -1,4 +1,3 @@
-//server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -30,8 +29,7 @@ app.post('/signup', async (req, res) => {
       return res.status(409).json({ message: 'User already exists' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword, location });
+    const user = new User({ name, email, password, location });
     await user.save();
     res.status(201).json({ message: 'User signed up successfully' });
   } catch (error) {
