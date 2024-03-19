@@ -55,8 +55,8 @@ header .wrapper {
 .app-wrapper {
   transform: scale(0.89);
   transform-origin: top center;
-  min-height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  min-height: auto;
+  width: 100%;
+  overflow: auto;
 }
 </style>

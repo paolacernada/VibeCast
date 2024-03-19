@@ -45,7 +45,7 @@
             <button @click="toggleHourlyTempUnit" class="toggle-btn small-btn">Switch to {{
                 hourlyTempUnit === 'F' ?
                     'Celsius' : 'Fahrenheit' }}</button>
-            <div v-if="forecastErrorMessage" class="error-message">
+            <div v-if="forecastErrorMessage" class="error-message-yellow">
                 {{ forecastErrorMessage }}
             </div>
             <div class="hour" v-for="(hour, index) in nextEightHoursData" :key="index">
@@ -489,7 +489,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .seven-day-forecast {
     margin-top: 2%;
     padding: 0.8rem;
@@ -510,7 +510,7 @@ export default {
 .container {
     max-width: 800px;
     width: auto;
-    margin: 0.6em;
+    margin: 1em auto;
     padding: 15px;
     display: flex;
     flex-direction: column;
@@ -579,12 +579,10 @@ export default {
 .weather-info {
     flex-basis: auto;
     padding: 0.8rem;
-    margin-top: 2%;
-    margin-right: 2%;
+    margin: 2.5%;
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-
     width: fit-content;
 }
 
@@ -608,7 +606,7 @@ export default {
     border-radius: 10px;
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    margin-top: 2%;
+    margin-top: 3%;
 }
 
 .weather-info p,
@@ -675,7 +673,7 @@ export default {
 }
 
 .matched-prompt {
-    padding: 13px;
+    padding: 10px;
 }
 
 .location-info h3 {
@@ -731,20 +729,23 @@ export default {
     width: fit-content;
 }
 
+.error-message-yellow {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background-color: #FEFEBE;
+    color: #721c24;
+    border: 1px solid #FFFF00;
+    border-radius: 0.25rem;
+    text-align: center;
+    width: fit-content;
+}
+
 body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    min-height: 111vh;
     background-attachment: fixed;
 }
-
-/* Media Queries */
-@media (min-width: 601px) {
-        body {
-            overflow: hidden; /* Only apply overflow hidden for larger screens */
-        }
-    }
 
 @media (max-width: 600px) {
 
@@ -754,7 +755,7 @@ body {
     .seven-day-forecast,
     .matched-prompt {
         margin: 10px;
-        padding: 15px;
+        padding: 10px;
         width: calc(100% - 20px);
         box-sizing: border-box;
     }
