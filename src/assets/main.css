@@ -20,4 +20,11 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   overflow: auto;
+  background-attachment: fixed;
+}
+
+@media (max-width: 600px) {
+  body {
+    background-attachment: scroll;
+  }
 }
