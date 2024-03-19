@@ -125,7 +125,6 @@ export default {
                     this.getZipCode(latitude, longitude);
                 },
                 (error) => {
-                    this.geoLocationError = "We're having a little trouble finding you. Let's try a different way.";
                     // Fallback to IP-based location if Geolocation fails
                     this.fetchLocationFromIP();
                 }

@@ -90,7 +90,7 @@ export default {
 
         if (response.ok) {
           const responseData = await response.json();
-          alert(`Welcome back! Ready to check the vibe? 🌤️`);
+          alert(`Welcome back! Dive into today's vibe. 🌤️`);
           localStorage.setItem('isAuthenticated', 'true');
           this.$router.push('/weather'); // Redirect to WeatherHome after login
         } else {
