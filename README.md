@@ -9,7 +9,7 @@ VibeCast is a delightful and intuitive weather application designed to not only 
 Built with modern technologies, including Vue.js for a dynamic and responsive user interface, Node.js and Express.js for robust server-side operations, and MongoDB for efficient data storage, VibeCast is crafted to offer an engaging user experience.
 
 ### Experience VibeCast Live! :sparkles:
-Dive into the VibeCast experience and see how the weather aligns with your vibe today! Check out the live site [here](https://dashboard.render.com/).
+Dive into the VibeCast experience and see how the weather aligns with your vibe today! Check out the live site [here](https://vibecast.onrender.com/).
 
 ### Key Features:
 
