@@ -53,7 +53,7 @@ header .wrapper {
 }
 
 .app-wrapper {
-  transform: scale(0.88);
+  transform: scale(0.89);
   transform-origin: top center;
   min-height: 100vh;
   width: 100vw;
