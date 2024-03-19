@@ -23,9 +23,9 @@
     <div v-if="activeSection === 'login'">
       <form @submit.prevent="login">
         <label>Email:</label>
-        <input v-model="loginEmail" required>
+        <input v-model="logInEmail" required>
         <label>Password:</label>
-        <input type="password" v-model="loginPassword" required>
+        <input type="password" v-model="logInPassword" required>
         <button type="submit">Sign In</button>
       </form>
     </div>
@@ -40,9 +40,8 @@ export default {
       name: '',
       email: '',
       password: '',
-      zipcode: '',
-      loginemail: '',
-      loginpassword: '',
+      logInEmail: '',
+      logInPassword: '',
       activeSection: 'signUp'
     };
   },
@@ -84,8 +83,8 @@ export default {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            email: this.loginEmail,
-            password: this.loginPassword,
+            email: this.logInEmail,
+            password: this.logInPassword,
           }),
         });
 
