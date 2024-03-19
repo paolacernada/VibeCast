@@ -675,6 +675,10 @@ export default {
     box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.05);
 }
 
+.matched-prompt {
+    padding: 13px;
+}
+
 .location-info h3 {
     margin-top: 0;
     font-size: 1.2rem;
