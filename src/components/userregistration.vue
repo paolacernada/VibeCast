@@ -61,14 +61,13 @@ export default {
         });
 
         if (response.ok) {
-          const responseData = await response.json();
           alert("Hooray! You're all signed up. Let's dive into your weather vibe. 🌤️");
           this.setActiveSection('login'); // Change to login section after the alert is dismissed
           this.clearForm(); // Clear the form after successful sign-up
         } else if (response.status === 409) {
           // User already exists
-          const responseData = await response.json();
           alert("It seems you're already part of our vibe tribe! Care to log in and catch the latest vibes? 😎");
+          this.setActiveSection('login'); // Redirect user to login after they acknowledge the alert
         } else {
           throw new Error('Ah, something went a bit wonky there. Could we try that again?');
         }
