@@ -47,7 +47,7 @@ export default {
   methods: {
     async signUp() {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}signup`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default {
     },
     async login() {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}login`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
