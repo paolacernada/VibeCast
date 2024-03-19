@@ -167,7 +167,11 @@ export default {
                 await this.fetchSevenDayForecast(apiKey);
 
             } catch (error) {
-                this.errorMessage = "Whoops! We hit a snag fetching your weather details. Try refreshing or check back soon!";
+                if (this.zipCode.trim() === '') {
+                    this.errorMessage = "Looks like we're missing a zipcode. Enter one to get started 📍";
+                } else {
+                    this.errorMessage = "Hmm, we couldn't find that location. Please double-check your zipcode and try again. 🔍";
+                }
             }
         },
         async fetchCurrentWeather(apiKey) {
