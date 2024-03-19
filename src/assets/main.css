@@ -24,6 +24,6 @@ body {
 
 @media (max-width: 600px) {
   body {
-    background-attachment: scroll;
+    background-attachment: fixed;
   }
 }

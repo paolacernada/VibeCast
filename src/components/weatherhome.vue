@@ -741,6 +741,10 @@ body {
 
 @media (max-width: 600px) {
 
+    body {
+    background-attachment: fixed;
+  }
+
     .container,
     .weather-info,
     .hourly-forecast,
