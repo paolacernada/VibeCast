@@ -209,7 +209,7 @@ export default {
 
             const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=${daysToFetch}&aqi=no&alerts=no`;
             const response = await fetch(url, { method: 'GET' });
-            if (!response.ok) throw new Error("Hmmm, we're having trouble peeking into the future. Forecast data is currently unavailable.");
+            if (!response.ok) throw new Error("🤔 we're having trouble peeking into the future. Forecast data is currently unavailable.");
             const data = await response.json();
 
             if (data && data.forecast && data.forecast.forecastday) {
@@ -236,7 +236,7 @@ export default {
                 const isTomorrow = startHour + i >= 24;
 
                 if (isTomorrow && forecastData.length < 2) {
-                    this.forecastErrorMessage = "We can't peek into tomorrow's hourly forecast just yet. Check back later for updates!";
+                    this.forecastErrorMessage = "We can't peek into tomorrow's 🕒 hourly forecast just yet. Check back later for updates!";
                     break; // Exit the loop if forecast data for the next day is not available
                 }
 
