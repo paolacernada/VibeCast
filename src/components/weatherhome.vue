@@ -736,9 +736,14 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     min-height: 111vh;
-    overflow: hidden;
     background-attachment: fixed;
 }
+
+@media (min-width: 601px) {
+        body {
+            overflow: hidden; /* Only apply overflow hidden for larger screens */
+        }
+    }
 
 /* Media Queries */
 @media (max-width: 600px) {
