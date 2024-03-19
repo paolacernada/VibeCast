@@ -1,9 +1,9 @@
+//server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const User = require('./models/User'); 
+const User = require('./models/User');
 const bcrypt = require('bcrypt');
-const path = require('path'); 
 
 require('dotenv').config();
 
@@ -13,21 +13,14 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the Vue app build directory
-app.use(express.static(path.join(__dirname, '../dist')));
-
 // Connecting to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB successfully');
-});
-
-mongoose.connection.on('error', (err) => {
+mongoose.connection.on('error', err => {
   console.error('MongoDB connection error:', err);
 });
 
-app.post('/api/signup', async (req, res) => {
+app.post('/signup', async (req, res) => {
   try {
     const { name, email, password, location } = req.body;
 
@@ -47,7 +40,7 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-app.post('/api/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -69,12 +62,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Catch-all route to handle client-side routing, serving index.html on all non-API routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
-});
-
 // Starting the server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
