@@ -1,4 +1,3 @@
-<!-- userregistration.vue -->
 <template>
   <div class="user-registration">
     <div>
