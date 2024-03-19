@@ -13,6 +13,7 @@
         <div v-if="errorMessage" class="error-message">
             {{ errorMessage }}
         </div>
+        <div v-if="geoLocationError" class="error-message">{{ geoLocationError }}</div>
         <!-- Matched Prompt Section -->
         <transition name="fade">
             <div v-if="matchedPrompt && matchedVibeClicked" class="matched-prompt">
@@ -113,6 +114,7 @@ export default {
             nextEightHoursData: [],
             errorMessage: '',
             forecastErrorMessage: '',
+            geoLocationError: ''
         };
     },
     mounted() {
@@ -123,13 +125,13 @@ export default {
                     this.getZipCode(latitude, longitude);
                 },
                 (error) => {
-                    console.error("Error getting current location via Geolocation:", error);
+                    this.geoLocationError = "We're having a little trouble finding you. Let's try a different way.";
                     // Fallback to IP-based location if Geolocation fails
                     this.fetchLocationFromIP();
                 }
             );
         } else {
-            console.error("Geolocation is not supported by this browser, falling back to IP-based location.");
+            this.geoLocationError = "It seems your device is a bit shy and doesn't want to share its location. No worries, we have another trick up our sleeve.";
             // Fallback to IP-based location if Geolocation is not supported
             this.fetchLocationFromIP();
         }
@@ -165,7 +167,7 @@ export default {
                 await this.fetchSevenDayForecast(apiKey);
 
             } catch (error) {
-                console.error('Error fetching weather data:', error);
+                this.errorMessage = "Whoops! We hit a snag fetching your weather details. Try refreshing or check back soon!";
             }
         },
         async fetchCurrentWeather(apiKey) {
@@ -173,7 +175,8 @@ export default {
             try {
                 const response = await fetch(url, { method: 'GET' });
                 if (!response.ok) {
-                    throw new Error('No matching location found.');
+                    this.errorMessage = "We're stumped! Couldn't find that location. Could you double-check and try again?";
+                    return;
                 }
                 const data = await response.json();
                 this.weather = data.current;
@@ -182,15 +185,14 @@ export default {
                 this.cityName = data.location.name;
                 this.regionName = data.location.region;
                 this.locationTimezone = data.location.tz_id;
-                console.log(`Updated locationTimezone: ${this.locationTimezone}`);
             } catch (error) {
-                this.errorMessage = error.message;
+                this.errorMessage = "Oh no! We couldn't pinpoint your weather right now. Maybe double-check that ZIP code?";
             }
         },
         async fetchSevenDayForecast(apiKey) {
             const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=8&aqi=no&alerts=no`; // Request 8 days to ensure we have 7 days excluding today
             const response = await fetch(url);
-            if (!response.ok) throw new Error('Failed to fetch 7-day forecast data');
+            if (!response.ok) throw new Error("Looks like the 7-day outlook is playing hard to get. We couldn't fetch it this time.");
             const data = await response.json();
 
             // Skip the first day's data and keep the next 7 days
@@ -207,9 +209,8 @@ export default {
 
             const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${this.zipCode}&days=${daysToFetch}&aqi=no&alerts=no`;
             const response = await fetch(url, { method: 'GET' });
-            if (!response.ok) throw new Error('Failed to fetch forecast data');
+            if (!response.ok) throw new Error("Hmmm, we're having trouble peeking into the future. Forecast data is currently unavailable.");
             const data = await response.json();
-            console.log("Forecast API Response:", data);
 
             if (data && data.forecast && data.forecast.forecastday) {
                 this.nextEightHoursData = this.getNextEightHoursForecast(data.forecast.forecastday);
@@ -235,7 +236,7 @@ export default {
                 const isTomorrow = startHour + i >= 24;
 
                 if (isTomorrow && forecastData.length < 2) {
-                    this.forecastErrorMessage = "Hourly Forecast data for tomorrow is not available.";
+                    this.forecastErrorMessage = "We can't peek into tomorrow's hourly forecast just yet. Check back later for updates!";
                     break; // Exit the loop if forecast data for the next day is not available
                 }
 
@@ -435,13 +436,12 @@ export default {
                         this.getZipCode(latitude, longitude);
                     },
                     (error) => {
-                        console.error("Error getting current location:", error);
+                        this.errorMessage = "We're a bit lost ourselves and couldn't find your location. Mind entering it manually?";
                         // Fallback to IP-based location
                         this.fetchLocationFromIP();
                     }
                 );
             } else {
-                console.error("Geolocation is not supported by this browser.");
                 // Fallback to IP-based location if geolocation is not supported
                 this.fetchLocationFromIP();
             }
@@ -452,16 +452,20 @@ export default {
 
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error('Failed to fetch IP-based location');
+                if (!response.ok) {
+                    this.errorMessage = "Hmm, we're having trouble pinpointing your location. Please enter it manually.";
+                    return;
+                }
+
                 const data = await response.json();
 
                 if (data.latitude && data.longitude) {
                     this.getZipCode(data.latitude, data.longitude);
                 } else {
-                    console.error('Latitude and longitude not found in IPAPI response');
+                    this.errorMessage = "We found your location, but couldn't figure out the zip code. Mind entering it?";
                 }
             } catch (error) {
-                console.error('Error fetching location from IP:', error);
+                this.errorMessage = "Oops, we hit a snag while trying to automatically find your location. Could you type it in instead?";
             }
         },
         async getZipCode(latitude, longitude) {
