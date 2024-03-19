@@ -68,7 +68,7 @@ export default {
         } else if (response.status === 409) {
           // User already exists
           const responseData = await response.json();
-          alert("It seems you're already part of our vibe tribe! Why not sign in and see what's new? 🕺💃");
+          alert("It seems you're already part of our vibe tribe! Care to log in and catch the latest vibes? 🕺💃");
         } else {
           throw new Error('Ah, something went a bit wonky there. Could we try that again?');
         }
