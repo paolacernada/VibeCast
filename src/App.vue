@@ -57,4 +57,11 @@ header .wrapper {
   width: 100%;
   overflow: auto;
 }
+
+@media (min-width: 768px) {
+  .app-wrapper {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+}
 </style>
