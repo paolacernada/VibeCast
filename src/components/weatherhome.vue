@@ -123,8 +123,6 @@ export default {
             );
         } else {
             this.geoLocationError = "It seems your device is a bit shy and doesn't want to share its location. No worries, we have another trick up our sleeve.";
-            // Fallback to IP-based location if Geolocation is not supported
-            this.fetchLocationFromIP();
         }
     },
     computed: {
@@ -425,37 +423,9 @@ export default {
                         const { latitude, longitude } = position.coords;
                         this.getZipCode(latitude, longitude);
                     },
-                    (error) => {
-                        this.errorMessage = "We're a bit lost ourselves and couldn't find your location. Mind entering it manually?";
-                        // Fallback to IP-based location
-                        this.fetchLocationFromIP();
-                    }
                 );
             } else {
-                // Fallback to IP-based location if geolocation is not supported
-                this.fetchLocationFromIP();
-            }
-        },
-        async fetchLocationFromIP() {
-            const apiKey = import.meta.env.VITE_IPAPI_API_KEY;
-            const url = `https://ipapi.co/json/?access_key=${apiKey}`;
-
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    this.errorMessage = "Hmm, we're having trouble pinpointing your location. Please enter it manually.";
-                    return;
-                }
-
-                const data = await response.json();
-
-                if (data.latitude && data.longitude) {
-                    this.getZipCode(data.latitude, data.longitude);
-                } else {
-                    this.errorMessage = "We found your location, but couldn't figure out the zip code. Mind entering it?";
-                }
-            } catch (error) {
-                this.errorMessage = "Oops, we hit a snag while trying to automatically find your location. Could you type it in instead?";
+                this.geoLocationError = "Geolocation is not supported by this browser.";
             }
         },
         async getZipCode(latitude, longitude) {
