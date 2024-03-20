@@ -168,7 +168,6 @@ export default {
             try {
                 const response = await fetch(url, { method: 'GET' });
                 if (!response.ok) {
-                    this.errorMessage = "We're stumped! Couldn't find that location. Could you double-check and try again?";
                     return;
                 }
                 const data = await response.json();
