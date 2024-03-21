@@ -13,7 +13,6 @@
         <div v-if="errorMessage" class="error-message">
             {{ errorMessage }}
         </div>
-        <div v-if="geoLocationError" class="error-message">{{ geoLocationError }}</div>
         <!-- Matched Prompt Section -->
         <transition name="fade">
             <div v-if="matchedPrompt && matchedVibeClicked" class="matched-prompt">
@@ -110,7 +109,8 @@ export default {
             locationTimezone: '',
             nextEightHoursData: [],
             errorMessage: '',
-            geoLocationError: ''
+            forecastErrorMessage: '',
+            geoLocationError: '',
         };
     },
     mounted() {
@@ -120,9 +120,10 @@ export default {
                     const { latitude, longitude } = position.coords;
                     this.getZipCode(latitude, longitude);
                 },
+                (error) => {
+                    console.error("Error getting current location via Geolocation:", error);
+                }
             );
-        } else {
-            this.geoLocationError = "It seems your device is a bit shy and doesn't want to share its location. No worries, we have another trick up our sleeve.";
         }
     },
     computed: {
@@ -158,8 +159,6 @@ export default {
             } catch (error) {
                 if (this.zipCode.trim() === '') {
                     this.errorMessage = "Looks like we're missing a zipcode. Enter one to get started 📍";
-                } else {
-                    this.errorMessage = "Hmm, we couldn't find that location. Please double-check your zipcode and try again. 🔍";
                 }
             }
         },
@@ -226,6 +225,11 @@ export default {
             for (let i = 0; i < hoursNeeded; i++) {
                 const forecastHour = (startHour + i) % 24;
                 const isTomorrow = startHour + i >= 24;
+
+                if (isTomorrow && forecastData.length < 2) {
+                    this.forecastErrorMessage = "Hourly Forecast data for tomorrow is not available.";
+                    break; // Exit the loop if forecast data for the next day is not available
+                }
 
                 const dayIndex = isTomorrow ? 1 : 0;
                 const dayForecast = forecastData[dayIndex].hour;
@@ -711,8 +715,8 @@ body {
 @media (max-width: 600px) {
 
     body {
-    background-attachment: fixed;
-  }
+        background-attachment: fixed;
+    }
 
     .container,
     .weather-info,
